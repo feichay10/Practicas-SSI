@@ -1,57 +1,179 @@
 -aes-128-cbc
+enter AES-128-CBC encryption password:
+Verifying - enter AES-128-CBC encryption password:
+
+real    0m2.778s
+user    0m0.010s
+sys     0m0.000s
 
 
--aes-128-ebc
+-aes-128-ecb
+enter AES-128-ECB encryption password:
+Verifying - enter AES-128-ECB encryption password:
+
+real    0m1.968s
+user    0m0.009s
+sys     0m0.000s
 
 
 -aes-192-cbc
+enter AES-192-CBC encryption password:
+Verifying - enter AES-192-CBC encryption password:
+
+real    0m1.784s
+user    0m0.007s
+sys     0m0.007s
 
 
 -aes-192-ecb
+enter AES-192-ECB encryption password:
+Verifying - enter AES-192-ECB encryption password:
+
+real    0m1.554s
+user    0m0.010s
+sys     0m0.001s
 
 
 -aes-256-cbc
+enter AES-256-CBC encryption password:
+Verifying - enter AES-256-CBC encryption password:
+
+real    0m1.665s
+user    0m0.014s
+sys     0m0.000s
 
 
 -aes-256-ecb
+enter AES-256-ECB encryption password:
+Verifying - enter AES-256-ECB encryption password:
+
+real    0m1.500s
+user    0m0.000s
+sys     0m0.009s
 
 
 -des
+enter DES-CBC encryption password:
+Verifying - enter DES-CBC encryption password:
+Error setting cipher DES-CBC
+4067382AB97F0000:error:0308010C:digital envelope routines:inner_evp_generic_fetch:unsupported:../crypto/evp/evp_fetch.c:349:Global default library context, Algorithm (DES-CBC : 8), Properties ()
+
+real    0m1.569s
+user    0m0.000s
+sys     0m0.009s
 
 
 -des-cbc
+enter DES-CBC encryption password:
+Verifying - enter DES-CBC encryption password:
+Error setting cipher DES-CBC
+40D70CAD047F0000:error:0308010C:digital envelope routines:inner_evp_generic_fetch:unsupported:../crypto/evp/evp_fetch.c:349:Global default library context, Algorithm (DES-CBC : 8), Properties ()
+
+real    0m3.421s
+user    0m0.005s
+sys     0m0.005s
 
 
 -des-cfb
+enter DES-CFB encryption password:
+Verifying - enter DES-CFB encryption password:
+Error setting cipher DES-CFB
+4067B8FB527F0000:error:0308010C:digital envelope routines:inner_evp_generic_fetch:unsupported:../crypto/evp/evp_fetch.c:349:Global default library context, Algorithm (DES-CFB : 38), Properties ()
+
+real    0m2.246s
+user    0m0.011s
+sys     0m0.000s
 
 
 -des-ecb
+enter DES-ECB encryption password:
+Verifying - enter DES-ECB encryption password:
+Error setting cipher DES-ECB
+40970510BC7F0000:error:0308010C:digital envelope routines:inner_evp_generic_fetch:unsupported:../crypto/evp/evp_fetch.c:349:Global default library context, Algorithm (DES-ECB : 1), Properties ()
+
+real    0m1.592s
+user    0m0.009s
+sys     0m0.000s
 
 
 -des-ede
+enter DES-EDE-ECB encryption password:
+Verifying - enter DES-EDE-ECB encryption password:
+
+real    0m1.570s
+user    0m0.005s
+sys     0m0.005s
 
 
 -des-ede-cbc
+enter DES-EDE-CBC encryption password:
+Verifying - enter DES-EDE-CBC encryption password:
+
+real    0m1.604s
+user    0m0.010s
+sys     0m0.000s
 
 
 -des-ede-cfb
+enter DES-EDE-CFB encryption password:
+Verifying - enter DES-EDE-CFB encryption password:
+
+real    0m1.607s
+user    0m0.011s
+sys     0m0.000s
 
 
 -des-ede-ofb
+enter DES-EDE-OFB encryption password:
+Verifying - enter DES-EDE-OFB encryption password:
+
+real    0m2.374s
+user    0m0.011s
+sys     0m0.000s
 
 
 -des-ede3
+enter DES-EDE3-ECB encryption password:
+Verifying - enter DES-EDE3-ECB encryption password:
+
+real    0m2.574s
+user    0m0.011s
+sys     0m0.000s
 
 
 -des-ede3-cbc
+enter DES-EDE3-CBC encryption password:
+Verifying - enter DES-EDE3-CBC encryption password:
+
+real    0m2.345s
+user    0m0.010s
+sys     0m0.001s
 
 
 -des-ede3-cfb
+enter DES-EDE3-CFB encryption password:
+Verifying - enter DES-EDE3-CFB encryption password:
+
+real    0m2.193s
+user    0m0.010s
+sys     0m0.001s
 
 
 -des-ede3-ofb
+enter DES-EDE3-OFB encryption password:
+Verifying - enter DES-EDE3-OFB encryption password:
+
+real    0m2.724s
+user    0m0.010s
+sys     0m0.000s
 
 
 -des-ofb
+enter DES-OFB encryption password:
+Verifying - enter DES-OFB encryption password:
+Error setting cipher DES-OFB
+4047E5CBA77F0000:error:0308010C:digital envelope routines:inner_evp_generic_fetch:unsupported:../crypto/evp/evp_fetch.c:349:Global default library context, Algorithm (DES-OFB : 66), Properties ()
 
-
+real    0m3.738s
+user    0m0.010s
+sys     0m0.000s
