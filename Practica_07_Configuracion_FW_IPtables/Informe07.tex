@@ -67,7 +67,7 @@
 
   % Secciones del informe
   \chapter{Configurar las interfaces de red del firewall}
-  Para este punto debemos activar dos interfaces de red, esto lo hicimos en la práctica anterior, ya que una de las interfaces (DOCINT1) no se configuró ya que no teníamos la IP. En mi caso he seleccionado la IP 192.168.10.0/24. Para configurar la interfaz DOCINT1, ens4 en la MV del firewall, vamos a configurar el fichero /etc/network/interfaces y metemos lo siguiente:
+  Para este punto debemos activar dos interfaces de red, esto lo hicimos en la práctica anterior, ya que una de las interfaces (DOCINT1) no se configuró ya que no teníamos la IP. En mi caso he seleccionado la IP 192.168.10.0/24. Para configurar la interfaz DOCINT1, ens4 en la MV del firewall, vamos a configurar el fichero \emph{/etc/network/interfaces} y metemos lo siguiente:
 
   \begin{verbatim}
 auto ens4
@@ -76,7 +76,6 @@ address 192.168.10.1
 netmask 255.255.255.0
   \end{verbatim}
 
-  
   Una vez añadido la configuración reiniciamos lo servicios de red con el siguiente comando:
 
   \begin{verbatim}
@@ -92,12 +91,12 @@ usuario@debian# sudo systemctl restart networking
     \label{fig:configuracion_interfaces}
   \end{figure}
 
-  % Nueva página para el segundo capítulo
+  % Nueva página 
   \cleardoublepage
 
   \chapter{Asignar máquina virtual “cliente” como cliente}
-  Para este punto vamos a configurar el fichero /etc/network/interfaces de la máquina virtual “cliente” y configuramos otra segunda interfaz y hacemos lo mismo que en el apartado anterior con la única diferencia que en esta interfaz que vamos a configurar añadimos un gateway que va a ser la de la “Red interna”.
-  El /etc/network/interfaces vamos a añadir los siguiente:
+  Para este punto vamos a configurar el fichero \emph{/etc/network/interfaces} de la máquina virtual “cliente” y configuramos otra segunda interfaz y hacemos lo mismo que en el apartado anterior con la única diferencia que en esta interfaz que vamos a configurar añadimos un gateway que va a ser la de la “Red interna”.
+  El \emph{/etc/network/interfaces} vamos a añadir los siguiente:
 
   \begin{verbatim}
 auto ens8
@@ -128,7 +127,7 @@ usuario@debian# sudo apt install links
 
   \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.65]{img/configuracion_interfaces_cliente.png}
+    \includegraphics[scale=0.65]{img/links_google.png}
     \caption{Captura de pantalla del navegador \emph{links}}
     \label{fig:links}
   \end{figure}
@@ -235,18 +234,28 @@ usuario@debian# sudo systemctl restart squid.service
 
   \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.63]{img/wget_google.png}
+    \includegraphics[scale=0.37]{img/wget_google.png}
     \caption{wget a \emph{Google}}
     \label{fig:wget google}
-  \end{figure}
+  \end{figure} 
 
-  Otra prueba que podemos hacer es un \emph{curl} a \emph{www.google.es}:
+  \cleardoublepage
+
+  Otra prueba que podemos hacer es un \emph{curl} a \emph{ull.es}:
 
   \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.65]{img/curl_google.png}
-    \caption{curl a \emph{Google}}
-    \label{fig:curl google}
+    \includegraphics[scale=0.8]{img/curl_ull.png}
+    \caption{curl a \emph{ULL}}
+    \label{fig:curl ULL}
+  \end{figure}
+
+  Otra prueba que podemos hacer es usar el navegador de texto \emph{links} para ver si podemos navegar por internet:
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.65]{img/links_cesinf.png}
+    \caption{Navegación por el navegador de texto \emph{Links}}
+    \label{fig:links cesinf}
   \end{figure}
 
 \end{document}
