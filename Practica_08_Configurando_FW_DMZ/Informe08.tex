@@ -1,0 +1,121 @@
+\documentclass{report} % Tipo de documento
+
+% Paquetes y configuraciones adicionales
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{titlesec}
+\usepackage{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{titling}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{wasysym}
+\usepackage{tikzsymbols}
+\usepackage[spanish]{babel}
+
+% Configuración de los títulos de las secciones
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip0.5em}
+}
+
+% Configura los márgenes
+\geometry{
+    left=2cm,   % Ajusta este valor al margen izquierdo deseado
+    right=2cm,  % Ajusta este valor al margen derecho deseado
+    top=3cm,
+    bottom=3cm,
+}
+
+% Configuración de los títulos de las secciones
+\titlespacing{\section}{0pt}{\parskip}{\parskip}
+\titlespacing{\subsection}{0pt}{\parskip}{\parskip}
+\titlespacing{\subsubsection}{0pt}{\parskip}{\parskip}
+
+% Redefinir el formato de los capítulos y añadir un punto después del número
+\makeatletter
+\renewcommand{\@makechapterhead}[1]{%
+  \vspace*{0\p@} % Ajusta este valor para el espaciado deseado antes del título del capítulo
+  {\parindent \z@ \raggedright \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+        \huge\bfseries \thechapter.\ % Añade un punto después del número
+    \fi
+    \interlinepenalty\@M
+    #1\par\nobreak
+    \vspace{10pt} % Ajusta este valor para el espacio deseado después del título del capítulo
+  }}
+\makeatother
+
+% Configura para que cada \chapter no comience en una pagina nueva
+\makeatletter
+\renewcommand\chapter{\@startsection{chapter}{0}{\z@}%
+    {-3.5ex \@plus -1ex \@minus -.2ex}%
+    {2.3ex \@plus.2ex}%
+    {\normalfont\Large\bfseries}}
+\makeatother
+
+\begin{document}
+
+% Portada del informe
+\title{Practicaa 08. Configurando un Firewall con DMZ}
+\subtitle{Seguridad de Sistemas Informáticos}
+\author{Cheuk Kelly Ng Pante (alu0101364544@ull.edu.es)}
+\date{\today}
+
+\maketitle
+
+% Índice
+\tableofcontents
+
+% Nueva página para el primer capítulo
+\cleardoublepage
+
+% % Sangría
+% \setlength{\parindent}{1em}Texto
+
+% % Quitar sangría
+% \noindent
+
+% % Punto
+% \CIRCLE \ \ \textbf{Texto} \emph{algo}
+% \begin{itemize}
+%   \item \textbf{Negrita:} Texto
+%   \item \textbf{Negrita:} Texto
+% \end{itemize}
+
+% Secciones del informe
+% Capitulo 1
+\chapter{Configuración de red con un sólo firewall, zona privada y DMZ}
+Por como está descrito la práctica, hay que cambiar la direccion de clase C 
+a clase B de la maquina que actuaba como cliente realizada en la práctica anterior, pero para no
+tener que volver a configurar todo de nuevo, lo que se va a hacer es a esta maquina que actuaba como
+cliente ahora va a actuar como servidor, y se va a crear una nueva maquina que va a actuar como cliente.
+
+Entonces, en la maquina nueva que va a actuar como cliente, se va a cambiar la direccion de clase C a clase B.
+
+% Capitulo 2
+\chapter{Configuracion de la red interna y un servidor en la DMZ}
+% 2.1
+\section{Seccion 2.1}
+
+% Nueva página
+\cleardoublepage
+
+% Poner una imagen
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[scale=0.55]{img/}
+%   \caption{Exportación de la base de datos en formato sql}
+%   \label{fig:exportación de la base de datos en formato sql}
+% \end{figure}
+
+% Capitulo 2
+\chapter{Capitulo 3}
+% 2.1
+\section{Seccion 3.1}
+
+\end{document}
