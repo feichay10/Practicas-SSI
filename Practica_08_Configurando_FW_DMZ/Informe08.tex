@@ -1,4 +1,4 @@
-\documentclass{report} % Tipo de documento
+\documentclass[11pt]{report} % Tipo de documento
 
 % Paquetes y configuraciones adicionales
 \usepackage{graphicx}
@@ -71,7 +71,7 @@
 % Índice
 \tableofcontents
 
-% Nueva página para el primer capítulo
+% Nueva página 
 \cleardoublepage
 
 % % Sangría
@@ -90,17 +90,109 @@
 % Secciones del informe
 % Capitulo 1
 \chapter{Configuración de red con un sólo firewall, zona privada y DMZ}
-Por como está descrito la práctica, hay que cambiar la direccion de clase C 
-a clase B de la maquina que actuaba como cliente realizada en la práctica anterior, pero para no
-tener que volver a configurar todo de nuevo, lo que se va a hacer es a esta maquina que actuaba como
-cliente ahora va a actuar como servidor, y se va a crear una nueva maquina que va a actuar como cliente.
+Para esta primera parte se crean primero las tres máquina en el IAAS y se configuran las diferentes interfaces de red 
+de cada una de ellas. Para ello, se accede al fichero \emph{/etc/network/interfaces} y se configuran las siguientes redes 
+siguiendo el siguiente direccionamiento:
+\begin{itemize}
+  \item \textbf{Internet:} red especificada por el servidor DHCP externo
+  \item \textbf{Red Interna:} red de clase C privada como subred de una clase B privada: 172.16.10.0/24
+  \item \textbf{DMZ:} red de clase C privada 192.168.10.0/24
+\end{itemize}
 
-Entonces, en la maquina nueva que va a actuar como cliente, se va a cambiar la direccion de clase C a clase B.
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.4]{img/esquema_red.png}
+  \caption{Esquema de red}
+  \label{fig:esquema de red}
+\end{figure}
+
+La configuración de red de cada máquina se muestra a continuación:
+\begin{itemize}
+  \item Maquina 1: \emph{Firewall}
+  \begin{verbatim}
+    # The primary network interface
+    allow-hotplug ens3
+    iface ens3 inet dhcp
+    
+    # The second network interace -> Server
+    auto ens4
+    iface ens4 inet static
+            address 192.168.10.1
+            netmask 255.255.255.0
+    
+    # The third network interface -> Client
+    auto ens7
+    iface ens7 inet static
+            address 172.16.10.1
+            netmask 255.255.255.0
+  \end{verbatim}
+
+  \item Maquina 2: \emph{Servidor}
+  \begin{verbatim}
+    # The primary network interface
+    allow-hotplug ens3
+    iface ens3 inet dhcp
+
+    # The second network interface
+    auto ens4
+    iface ens4 inet static
+            address 192.168.10.100
+            netmask 255.255.255.0
+            gateway 192.168.10.1
+  \end{verbatim}
+
+  \item Maquina 2: \emph{Cliente}
+  \begin{verbatim}
+    # The primary network interface
+    allow-hotplug ens3
+    iface ens3 inet dhcp
+
+    # The second network interface
+    auto ens4
+    iface ens4 inet static
+        address 172.16.10.2
+        netmask 255.255.255.255
+        gateway 172.16.10.1
+  \end{verbatim}
+\end{itemize}
+
+% Nueva página 
+\cleardoublepage
 
 % Capitulo 2
 \chapter{Configuracion de la red interna y un servidor en la DMZ}
-% 2.1
-\section{Seccion 2.1}
+Para este apartado se configura la red interna y se instala un servidor web en la DMZ. 
+Primero debemos instalar en el cliente un navegor web, en este caso se instala \emph{links} 
+con el comando \emph{sudo apt-get install links}. Luego, instalamos el servidor web \emph{nginx}
+con el comando \emph{sudo apt-get install nginx}. 
+
+Una vez instalado \emph{nginx} se procede a configurar el servidor web. Para ello, se accede al fichero \\
+\emph{/etc/nginx/sites-available/default} y se modifica el fichero de la siguiente manera:
+
+\begin{verbatim}
+server {
+  listen 192.168.10.100:80;
+  server_name 10.6.129.251;
+}
+\end{verbatim}
+
+Una vez modificado el fichero, se reinicia el servidor web con el comando \emph{sudo systemctl restart nginx}. Ya 
+con el servidor web configurado, configuramos las reglas firewall para permitir la redirección de tráfico del puerto
+80 al servidor web. Para ello, ejecutamos las siguientes reglas \emph{iptable} en el firewall:
+
+\begin{verbatim}
+iptables -t nat -A PREROUTING -i ens3 -p tcp --match multiport --dports 80,443 -j DNAT 
+--to 192.168.10.100:80
+
+iptables -t nat -A PREROUTING -i ens4 -d 10.6.129.251 -p tcp --match multiport 
+--dports 80,443 -j DNAT --to 192.168.10.100:80
+\end{verbatim}
+
+
+
+% se procede a probar la conexión desde el cliente. Para ello, se accede al cliente
+% y se ejecuta el comando \emph{links http://192.168.10.100}
+
 
 % Nueva página
 \cleardoublepage
