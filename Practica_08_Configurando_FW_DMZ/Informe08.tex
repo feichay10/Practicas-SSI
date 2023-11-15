@@ -188,26 +188,22 @@ iptables -t nat -A PREROUTING -i ens4 -d 10.6.129.251 -p tcp --match multiport
 --dports 80,443 -j DNAT --to 192.168.10.100:80
 \end{verbatim}
 
+Ya con el servidor web configurado y las reglas iptables configuradas, se procede a comprobar que el servidor web
+funciona correctamente. Para ello, se accede al cliente y se ejecuta el comando \emph{links http://192.168.10.100}
+y se comprueba que se muestra la página web de \emph{nginx}.
 
-
-% se procede a probar la conexión desde el cliente. Para ello, se accede al cliente
-% y se ejecuta el comando \emph{links http://192.168.10.100}
-
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.4]{img/nginx_cliente.png}
+  \caption{Página web de nginx desde el cliente}
+  \label{fig:página web de nginx desde el cliente}
+\end{figure}
 
 % Nueva página
 \cleardoublepage
 
-% Poner una imagen
-% \begin{figure}[H]
-%   \centering
-%   \includegraphics[scale=0.55]{img/}
-%   \caption{Exportación de la base de datos en formato sql}
-%   \label{fig:exportación de la base de datos en formato sql}
-% \end{figure}
-
 % Capitulo 2
-\chapter{Capitulo 3}
-% 2.1
-\section{Seccion 3.1}
+\chapter{Configuración del Firewall con políticas por defecto DROP}
+
 
 \end{document}
