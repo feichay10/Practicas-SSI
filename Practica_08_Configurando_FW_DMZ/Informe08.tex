@@ -176,21 +176,63 @@ iptables -t nat -A PREROUTING -i ens4 -d 10.6.129.251 -p tcp --match multiport
 \end{verbatim}
 
 Ya con el servidor web configurado y las reglas iptables configuradas, se procede a comprobar que el servidor web
-funciona correctamente. Para ello, se accede al cliente y se ejecuta el comando \emph{links http://192.168.10.100}
-y se comprueba que se muestra la página web de \emph{nginx}.
+funciona correctamente.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[scale=0.4]{img/nginx_cliente.png}
-  \caption{Página web de nginx desde el cliente}
-  \label{fig:página web de nginx desde el cliente}
-\end{figure}
 
 % Nueva página
 \cleardoublepage
 
 % Capitulo 3
 \chapter{Configuración del Firewall con políticas por defecto DROP}
+El script de configuración del firewall se muestra a continuación:
 
+\begin{verbatim}
+#!/bin/bash
+
+# Reset all tables
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+iptables -F
+iptables -X
+iptables -Z
+iptables -t nat -F
+iptables -t nat -X
+iptables -t nat -Z
+
+iptables -A FORWARD -i ens4 -p tcp --match multiport --dports 80,443 -j ACCEPT
+iptables -A FORWARD -i ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
+
+iptables -A FORWARD --match state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A FORWARD -i ens3 -o ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
+
+iptables -A FORWARD -p udp --dport 53 -j ACCEPT
+iptables -A FORWARD -p udp --dport 53 -j ACCEPT
+
+iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE
+\end{verbatim}
+
+En el punto de permitir tráfico web desde Internet al servidor web de la DMZ, aqui una captura de pantalla de la
+página web de \emph{nginx} desde un navegador:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.55]{img/nginx_navegador.png}
+  \caption{Página web de nginx desde un navegador}
+  \label{fig:página web de nginx desde un navegador}
+\end{figure}
+
+% Nueva página
+\cleardoublepage
+
+Luego, para el punto de permitir tráfico web desde red interna a al servidor web que está en la DMZ, una captura de pantalla
+accediendo al servidor web con la IP privada, 192.168.10.100, desde el cliente:
+q
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/nginx_cliente_privada.png}
+  \caption{Página web de nginx desde el cliente con la IP privada}
+  \label{fig:página web de nginx desde el cliente con la IP privada}
+\end{figure}
 
 \end{document}
