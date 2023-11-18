@@ -97,51 +97,36 @@ La configuración de red de cada máquina se muestra a continuación:
 \begin{itemize}
   \item Maquina 1: \emph{Firewall}
   \begin{verbatim}
-    # The primary network interface
-    allow-hotplug ens3
-    iface ens3 inet dhcp
-    
-    # The second network interace -> Server
-    auto ens4
-    iface ens4 inet static
-            address 192.168.10.1
-            netmask 255.255.255.0
-    
-    # The third network interface -> Client
-    auto ens7
-    iface ens7 inet static
-            address 172.16.10.1
-            netmask 255.255.255.0
-  \end{verbatim}
+# The primary network interface
+allow-hotplug ens3
+iface ens3 inet dhcp
 
-  \item Maquina 2: \emph{Servidor}
-  \begin{verbatim}
-    # The primary network interface
-    allow-hotplug ens3
-    iface ens3 inet dhcp
+# The second network interace -> Server
+auto ens4
+iface ens4 inet static
+        address 192.168.10.1
+        netmask 255.255.255.0
 
-    # The second network interface
-    auto ens4
-    iface ens4 inet static
-            address 192.168.10.100
-            netmask 255.255.255.0
-            gateway 192.168.10.1
+# The third network interface -> Client
+auto ens7
+iface ens7 inet static
+        address 172.16.10.1
+        netmask 255.255.255.0
   \end{verbatim}
 
   \item Maquina 2: \emph{Cliente}
   \begin{verbatim}
-    # The primary network interface
-    allow-hotplug ens3
-    iface ens3 inet dhcp
-
-    # The second network interface
-    auto ens4
-    iface ens4 inet static
-        address 172.16.10.2
-        netmask 255.255.255.255
-        gateway 172.16.10.1
+# The second network interface
+auto ens4
+iface ens4 inet static
+    address 172.16.10.2
+    netmask 255.255.255.255
+    gateway 172.16.10.1
   \end{verbatim}
 \end{itemize}
+
+Para las diferentes máquinas, a excepción del firewall, hay que deshabilitar la interfaz de la red publica. Para ello, en el mismo fichero de configuración
+de las interfaces red, se borra la configuración de la interfaz que sea de la red pública y se reinicia los servicios de red.
 
 % Nueva página 
 \cleardoublepage
@@ -150,10 +135,22 @@ La configuración de red de cada máquina se muestra a continuación:
 \chapter{Configuracion de la red interna y un servidor en la DMZ}
 Para este apartado se configura la red interna y se instala un servidor web en la DMZ. 
 Primero debemos instalar en el cliente un navegor web, en este caso se instala \emph{links} 
-con el comando \emph{sudo apt-get install links}. Luego, instalamos el servidor web \emph{nginx}
+con el comando \emph{sudo apt-get install links}. Luego, instalamos en la maquina servidor, el servidor web \emph{nginx}
 con el comando \emph{sudo apt-get install nginx}. 
 
-Una vez instalado \emph{nginx} se procede a configurar el servidor web. Para ello, se accede al fichero \\
+Antes de realizar la configuración de \emph{nginx}, se debe configurar la red DMZ, del servidor web. Para ello, se accede al fichero
+\emph{/etc/network/interfaces} y asignamos la IP privada 192.168.10.100/24 y como gateway la IP privada del firewall, entonces el fichero
+de configuración de la red DMZ añadimos lo siguiente:
+\begin{verbatim}
+# The second network interface
+auto ens4
+iface ens4 inet static
+      address 192.168.10.100
+      netmask 255.255.255.0
+      gateway 192.168.10.1
+\end{verbatim}
+
+Ya configurado la red DMZ, se procede a configurar el servidor web. Para ello, se accede al fichero \\
 \emph{/etc/nginx/sites-available/default} y se modifica el fichero de la siguiente manera:
 
 \begin{verbatim}
@@ -163,33 +160,26 @@ server {
 }
 \end{verbatim}
 
-Una vez modificado el fichero, se reinicia el servidor web con el comando \emph{sudo systemctl restart nginx}. Ya 
-con el servidor web configurado, configuramos las reglas firewall para permitir la redirección de tráfico del puerto
-80 al servidor web. Para ello, ejecutamos las siguientes reglas \emph{iptable} en el firewall:
+Una vez modificado el fichero, se reinicia el servidor web con el comando \emph{sudo systemctl restart nginx}.
 
-\begin{verbatim}
-iptables -t nat -A PREROUTING -i ens3 -p tcp --match multiport --dports 80,443 -j DNAT 
---to 192.168.10.100:80
-
-iptables -t nat -A PREROUTING -i ens4 -d 10.6.129.251 -p tcp --match multiport 
---dports 80,443 -j DNAT --to 192.168.10.100:80
-\end{verbatim}
-
-Ya con el servidor web configurado y las reglas iptables configuradas, se procede a comprobar que el servidor web
-funciona correctamente.
-
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.4]{img/nginx_status.png}
+  \caption{Estado del servidor web nginx}
+  \label{fig:estado del servidor web nginx}
+\end{figure}
 
 % Nueva página
 \cleardoublepage
 
 % Capitulo 3
-\chapter{Configuración del Firewall con políticas por defecto DROP}
+\chapter{Reglas de filtrado para el firewall}
 El script de configuración del firewall se muestra a continuación:
 
 \begin{verbatim}
 #!/bin/bash
 
-# Reset all tables
+# Reset de las reglas
 iptables -P INPUT DROP
 iptables -P FORWARD DROP
 iptables -P OUTPUT ACCEPT
@@ -200,17 +190,32 @@ iptables -t nat -F
 iptables -t nat -X
 iptables -t nat -Z
 
+# Acceso ssh al firewall
+iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A INPUT -i ens3 -p tcp --dport 22 -j ACCEPT
+
+# Asignar al servidor Web la IP privada 192.168.10.100:
+iptables -t nat -A PREROUTING -i ens3 -p tcp --match multiport --dports 80,443 -j DNAT 
+--to 192.168.10.100:80
+
+iptables -t nat -A PREROUTING -i ens4 -d 10.6.129.251 -p tcp --match multiport 
+--dports 80,443 -j DNAT --to 192.168.10.100:80
+
 iptables -A FORWARD -i ens4 -p tcp --match multiport --dports 80,443 -j ACCEPT
 iptables -A FORWARD -i ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
 
 iptables -A FORWARD --match state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A FORWARD -i ens3 -o ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
 
+# Permitir tráfico DNS
 iptables -A FORWARD -p udp --dport 53 -j ACCEPT
 iptables -A FORWARD -p udp --dport 53 -j ACCEPT
 
 iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE
 \end{verbatim}
+
+% Nueva página
+\cleardoublepage
 
 En el punto de permitir tráfico web desde Internet al servidor web de la DMZ, aqui una captura de pantalla de la
 página web de \emph{nginx} desde un navegador:
@@ -225,9 +230,9 @@ página web de \emph{nginx} desde un navegador:
 % Nueva página
 \cleardoublepage
 
-Luego, para el punto de permitir tráfico web desde red interna a al servidor web que está en la DMZ, una captura de pantalla
-accediendo al servidor web con la IP privada, 192.168.10.100, desde el cliente:
-q
+Luego, para el punto de permitir tráfico web desde red interna a al servidor web que está en la DMZ, 
+una captura de pantalla accediendo al servidor web con la IP privada, 192.168.10.100, desde el cliente:
+
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.5]{img/nginx_cliente_privada.png}
