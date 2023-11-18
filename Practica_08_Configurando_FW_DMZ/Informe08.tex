@@ -194,16 +194,17 @@ iptables -t nat -Z
 iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A INPUT -i ens3 -p tcp --dport 22 -j ACCEPT
 
-# Asignar al servidor Web la IP privada 192.168.10.100:
-iptables -t nat -A PREROUTING -i ens3 -p tcp --match multiport --dports 80,443 -j DNAT 
---to 192.168.10.100:80
-
+# Acceder desde la red interna (con la ip publica) a los servicios web
+iptables -t nat -A PREROUTING -i ens3 -p tcp --match multiport 
+--dports 80,443 -j DNAT --to 192.168.10.100:80 
 iptables -t nat -A PREROUTING -i ens4 -d 10.6.129.251 -p tcp --match multiport 
---dports 80,443 -j DNAT --to 192.168.10.100:80
+--dports 80,443 -j DNAT --to-destination 192.168.10.100:80 
 
+# Acceder desde la red interna a servidores Web de Internet
 iptables -A FORWARD -i ens4 -p tcp --match multiport --dports 80,443 -j ACCEPT
 iptables -A FORWARD -i ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
 
+# Permite acceder a los servicios web (DMZ) desde internet
 iptables -A FORWARD --match state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A FORWARD -i ens3 -o ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
 
@@ -217,27 +218,50 @@ iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE
 % Nueva página
 \cleardoublepage
 
-En el punto de permitir tráfico web desde Internet al servidor web de la DMZ, aqui una captura de pantalla de la
-página web de \emph{nginx} desde un navegador:
+Para permitir tráfico web desde la red interna a los servidores web de Internet, se debe añadir las siguientes reglas:
+\begin{verbatim}
+iptables -A FORWARD -i ens4 -p tcp --match multiport --dports 80,443 -j ACCEPT
+iptables -A FORWARD -i ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
+\end{verbatim}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.4]{img/web_internet.png}
+  \caption{Accediendo a los servidores web de Internet desde la red interna}
+  \label{fig:permitir tráfico web desde la red interna a los servidores web de Internet}
+\end{figure}
+
+Para permitir el tráfico Web desde Internet al servidor web que se encuentra en la DMZ, se debe añadir las siguientes reglas:
+\begin{verbatim}
+iptables -A FORWARD --match state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A FORWARD -i ens3 -o ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
+\end{verbatim}
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.55]{img/nginx_navegador.png}
-  \caption{Página web de nginx desde un navegador}
-  \label{fig:página web de nginx desde un navegador}
+  \caption{Accediendo al servidor web de la DMZ desde Internet}
+  \label{fig:permitir tráfico web desde Internet al servidor web que se encuentra en la DMZ}
 \end{figure}
+
+Y por último, para permitir el tráfico Web desde la red interna al servidor web de la DMZ, se debe añadir las siguientes reglas:
+\begin{verbatim}
+iptables -t nat -A PREROUTING -i ens3 -p tcp --match multiport 
+--dports 80,443 -j DNAT --to 192.168.10.100:80 
+iptables -t nat -A PREROUTING -i ens4 -d 10.6.129.251 -p tcp --match multiport 
+--dports 80,443 -j DNAT --to-destination 192.168.10.100:80 
+\end{verbatim}
 
 % Nueva página
 \cleardoublepage
 
-Luego, para el punto de permitir tráfico web desde red interna a al servidor web que está en la DMZ, 
-una captura de pantalla accediendo al servidor web con la IP privada, 192.168.10.100, desde el cliente:
+En la siguiente figura se muestra el acceso al servidor web de la DMZ desde la red interna.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.5]{img/nginx_cliente_privada.png}
-  \caption{Página web de nginx desde el cliente con la IP privada}
-  \label{fig:página web de nginx desde el cliente con la IP privada}
+  \includegraphics[scale=0.5]{img/nginx_cliente.png}
+  \caption{Accediendo al servidor web de la DMZ desde la red interna}
+  \label{fig:permitir tráfico web desde la red interna al servidor web de la DMZ}
 \end{figure}
 
 \end{document}
