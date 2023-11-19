@@ -3,7 +3,7 @@
 # Reset de las reglas
 iptables -P INPUT DROP
 iptables -P FORWARD DROP
-iptables -P OUTPUT ACCEPT
+iptables -P OUTPUT DROP
 iptables -F
 iptables -X
 iptables -Z
