@@ -27,7 +27,7 @@ iptables -A FORWARD -i ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
 iptables -A FORWARD --match state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A FORWARD -i ens3 -o ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
 
-# Permitir tráfico DNS
+# Permitir trafico DNS
 iptables -A FORWARD -p udp --dport 53 -j ACCEPT
 iptables -A FORWARD -p udp --dport 53 -j ACCEPT
 

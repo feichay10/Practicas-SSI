@@ -14,6 +14,8 @@
 \usepackage{wasysym}
 \usepackage{tikzsymbols}
 \usepackage[spanish]{babel}
+\usepackage{listings}
+\usepackage{xcolor}
 
 % Configuración de los títulos de las secciones
 \newcommand{\subtitle}[1]{
@@ -57,6 +59,32 @@
     {2.3ex \@plus.2ex}%
     {\normalfont\Large\bfseries}}
 \makeatother
+
+% Configurar los colores para el código
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Configurar el estilo para el código
+\lstdefinestyle{mystyle}{
+  backgroundcolor=\color{backcolour},   
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{magenta},
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codepurple},
+  basicstyle=\ttfamily\footnotesize,
+  breakatwhitespace=false,         
+  breaklines=true,                 
+  captionpos=b,                    
+  keepspaces=true,                 
+  numbers=left,                    
+  numbersep=11pt,                  
+  showspaces=false,                
+  showstringspaces=false,
+  showtabs=false,                  
+  tabsize=2
+}
 
 \begin{document}
 
@@ -176,44 +204,48 @@ Una vez modificado el fichero, se reinicia el servidor web con el comando \emph{
 \chapter{Reglas de filtrado para el firewall}
 El script de configuración del firewall se muestra a continuación:
 
-\begin{verbatim}
-#!/bin/bash
+% \begin{verbatim}
+% #!/bin/bash
 
-# Reset de las reglas
-iptables -P INPUT DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT DROP
-iptables -F
-iptables -X
-iptables -Z
-iptables -t nat -F
-iptables -t nat -X
-iptables -t nat -Z
+% # Reset de las reglas
+% iptables -P INPUT DROP
+% iptables -P FORWARD DROP
+% iptables -P OUTPUT DROP
+% iptables -F
+% iptables -X
+% iptables -Z
+% iptables -t nat -F
+% iptables -t nat -X
+% iptables -t nat -Z
 
-# Acceso ssh al firewall
-iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -A INPUT -i ens3 -p tcp --dport 22 -j ACCEPT
+% # Acceso ssh al firewall
+% iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+% iptables -A INPUT -i ens3 -p tcp --dport 22 -j ACCEPT
 
-# Acceder desde la red interna (con la ip publica) a los servicios web
-iptables -t nat -A PREROUTING -i ens3 -p tcp --match multiport 
---dports 80,443 -j DNAT --to 192.168.10.100:80 
-iptables -t nat -A PREROUTING -i ens4 -d 10.6.129.251 -p tcp --match multiport 
---dports 80,443 -j DNAT --to-destination 192.168.10.100:80 
+% # Acceder desde la red interna (con la ip publica) a los servicios web
+% iptables -t nat -A PREROUTING -i ens3 -p tcp --match multiport 
+% --dports 80,443 -j DNAT --to 192.168.10.100:80 
+% iptables -t nat -A PREROUTING -i ens4 -d 10.6.129.251 -p tcp --match multiport 
+% --dports 80,443 -j DNAT --to-destination 192.168.10.100:80 
 
-# Acceder desde la red interna a servidores Web de Internet
-iptables -A FORWARD -i ens4 -p tcp --match multiport --dports 80,443 -j ACCEPT
-iptables -A FORWARD -i ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
+% # Acceder desde la red interna a servidores Web de Internet
+% iptables -A FORWARD -i ens4 -p tcp --match multiport --dports 80,443 -j ACCEPT
+% iptables -A FORWARD -i ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
 
-# Permite acceder a los servicios web (DMZ) desde internet
-iptables -A FORWARD --match state --state ESTABLISHED,RELATED -j ACCEPT
-iptables -A FORWARD -i ens3 -o ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
+% # Permite acceder a los servicios web (DMZ) desde internet
+% iptables -A FORWARD --match state --state ESTABLISHED,RELATED -j ACCEPT
+% iptables -A FORWARD -i ens3 -o ens7 -p tcp --match multiport --dports 80,443 -j ACCEPT
 
-# Permitir tráfico DNS
-iptables -A FORWARD -p udp --dport 53 -j ACCEPT
-iptables -A FORWARD -p udp --dport 53 -j ACCEPT
+% # Permitir tráfico DNS
+% iptables -A FORWARD -p udp --dport 53 -j ACCEPT
+% iptables -A FORWARD -p udp --dport 53 -j ACCEPT
 
-iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE
-\end{verbatim}
+% iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE
+% \end{verbatim}
+
+% Poner codigo de un lenguaje a partir de un archivo
+\lstset{style=mystyle}
+\lstinputlisting[language=Bash]{firewall.sh}
 
 % Nueva página
 \cleardoublepage
