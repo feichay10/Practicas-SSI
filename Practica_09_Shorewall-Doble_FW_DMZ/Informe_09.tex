@@ -195,10 +195,6 @@ y \emph{dmz} para la DMZ, con el siguiente direccionamiento:
   \item \textbf{Red Interna:} Clase C privada como subred de una clase B privada: 172.16.X.0/24.
   \item \textbf{DMZ:} Clase C privada 192.168.X.0/24.
 \end{itemize}
-
-% Una vez hecha la configuración de la red, se va a borrar las intefaces externas por defecto
-% en el servidor, el cliente y el firewall interno.
-
 \section{Configuración de la red en el firewall externo}
 Para la configuración de la red en el firewall externo, se va a configurar la interfaz que
 va conectada a la DMZ, para ello se va a configurar el archivo \emph{/etc/network/interfaces}
@@ -265,6 +261,9 @@ quedando de la siguiente manera:
   \end{subfigure}
   \caption{Resultado de la configuración de la red en el firewall externo e interno}
 \end{figure}
+
+Una vez hecha la configuración de la red, se va a borrar las interfaces externas por defecto
+en el servidor, en el cliente y en el firewall interno.
 
 
 % Nueva página
