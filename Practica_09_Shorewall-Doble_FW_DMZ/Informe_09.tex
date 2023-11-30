@@ -18,6 +18,7 @@
 \usepackage{hyperref}
 \usepackage[spanish]{babel}
 \usepackage{listings}
+\usepackage{subcaption}
 \usepackage{xcolor}
 
 \newcommand{\subtitle}[1]{
@@ -226,22 +227,45 @@ el siguiente comando:
 sudo yum install NetworkManager-tui
 \end{BVerbatim}
 
-Una vez instalado \emph{nmtui}, se va a configurar la interfaz que va conectada a la DMZ, queda de la siguiente
+Una vez instalado \emph{nmtui}, se va a configurar la interfaz que va conectada a la DMZ y a la red interna, queda de la siguiente
 manera:
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.5]{img/fw-interno_to_DMZ.png}
-  \caption{Configuración de la interfaz que va conectada a la DMZ}
-  \label{fig:Configuracion de la interfaz que va conectada a la DMZ}
+  \includegraphics[scale=0.45]{img/fw-interno_interface.png}
+  \caption{Configuración }
+  \label{fig:Configuracion de la intefaz que va conectada a la DMZ y a la red interna}
 \end{figure}
 
-Luego, se va a configurar la interfaz que va conectada a la red interna, queda de la siguiente manera:
+% Luego, se va a configurar la interfaz que va conectada a la red interna, queda de la siguiente manera:
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[scale=0.5]{img/fw-interno_to_LAN.png}
+%   \caption{Configuración de la interfaz que va conectada a la red interna}
+%   \label{fig:Configuracion de la interfaz que va conectada a la red interna}
+% \end{figure}
+
+% % Nueva página
+% \cleardoublepage
+
+\section{Resultado de la configuración de la red en el firewall externo e interno}
+Una vez configurada la red en el firewall externo e interno, se va a comprobar que la configuración
+se ha realizado correctamente. Para ello, se va a utilizar el comando \emph{ip a} en ambos firewalls,
+quedando de la siguiente manera:
+% Poner dos imágenes
 \begin{figure}[H]
-  \centering
-  \includegraphics[scale=0.5]{img/fw-interno_to_LAN.png}
-  \caption{Configuración de la interfaz que va conectada a la red interna}
-  \label{fig:Configuracion de la interfaz que va conectada a la red interna}
+  \begin{subfigure}{0.5\textwidth}
+    \centering
+    \includegraphics[scale=0.35]{img/ip_a_fw_externo.png}
+    \caption{Configuracion de la red en el firewall externo}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\textwidth}
+    \centering
+    \includegraphics[scale=0.38]{img/ip_a_fw_interno.png}
+    \caption{Configuracion de la red en el firewall interno}
+  \end{subfigure}
+  \caption{Resultado de la configuración de la red en el firewall externo e interno}
 \end{figure}
+
 
 % Nueva página
 \cleardoublepage
