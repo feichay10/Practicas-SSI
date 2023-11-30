@@ -199,6 +199,49 @@ y \emph{dmz} para la DMZ, con el siguiente direccionamiento:
 % en el servidor, el cliente y el firewall interno.
 
 \section{Configuración de la red en el firewall externo}
+Para la configuración de la red en el firewall externo, se va a configurar la interfaz que
+va conectada a la DMZ, para ello se va a configurar el archivo \emph{/etc/network/interfaces}
+con la siguiente configuración:
+\begin{verbatim}
+auto ens4
+iface ens4 inet static
+        address 192.168.10.2
+        netmask 255.255.255.0
+\end{verbatim}
+
+Una vez configurada la interfaz, se va reiniciar el servicio de red con el siguiente comando: \\
+\begin{BVerbatim}
+sudo systemctl restart networking
+\end{BVerbatim}
+
+% Nueva página
+\cleardoublepage
+
+\section{Configuración de la red en el firewall interno}
+Para la configuración de la red en el firewall interno, se va a configurar dos interfaces, una
+que va conectada a la DMZ y otra que va conectada a la red interna. Como esta máquina es un \emph{CentOS},
+la configuración de la red lo haremos con \emph{nmtui}. Para la instalación de \emph{nmtui}, se va a utilizar
+el siguiente comando:
+\begin{BVerbatim}
+sudo yum install NetworkManager-tui
+\end{BVerbatim}
+
+Una vez instalado \emph{nmtui}, se va a configurar la interfaz que va conectada a la DMZ, queda de la siguiente
+manera:
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/fw-interno_to_DMZ.png}
+  \caption{Configuración de la interfaz que va conectada a la DMZ}
+  \label{fig:Configuracion de la interfaz que va conectada a la DMZ}
+\end{figure}
+
+Luego, se va a configurar la interfaz que va conectada a la red interna, queda de la siguiente manera:
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/fw-interno_to_LAN.png}
+  \caption{Configuración de la interfaz que va conectada a la red interna}
+  \label{fig:Configuracion de la interfaz que va conectada a la red interna}
+\end{figure}
 
 % Nueva página
 \cleardoublepage
