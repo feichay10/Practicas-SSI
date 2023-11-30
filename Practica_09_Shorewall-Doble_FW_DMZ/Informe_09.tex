@@ -265,21 +265,63 @@ quedando de la siguiente manera:
 Una vez hecha la configuración de la red, se va a borrar las interfaces externas por defecto
 en el servidor, en el cliente y en el firewall interno.
 
-
 % Nueva página
 \cleardoublepage
 
 % Capitulo 2
 \chapter{Habilitar \emph{NAT} utilizando la configuración de \emph{Shorewall}}
-Para habilitar \emph{NAT} utilizando la configuración de \emph{Shorewall}, se va a 
-configurar el archivo \emph{snat} en el directorio \emph{/etc/shorewall/} con la
-siguiente configuración:
+Para habilitar \emph{NAT}, lo haremos en el firewall externo ya que es el que está conectado 
+a Internet. Para ello, primero habilitaremos el \emph{forwarding} y lo haremos configurando el
+fichero \emph{/etc/shorewall/shorewall.conf} con la siguiente configuración:
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.392]{img/snat_config.png}
-  \caption{Configuración de \emph{snat}}
-  \label{fig:Configuracion de snat}
+  \includegraphics[scale=0.7]{img/forwarding_shorewall.png}
+  \caption{Configuración de \emph{forwarding} en \emph{Shorewall}}
+  \label{fig:Configuracion de forwarding en Shorewall}
 \end{figure}
+
+Una vez habilitado el \emph{forwarding}, se va a configurar los diferentes archivos de configuracion
+de \emph{Shorewall}. \emph{Shorewall} describe los requisitos de firewall utilizando entradas en un 
+conjunto de archivos de configuración. Shorewall lee esos archivos de configuración y, 
+con la ayuda de las utilidades \emph{iptables}, \emph{iptables-restore}, \emph{ip} y \emph{tc} configura 
+el \emph{Netfilter} y el tráfico de red relacionado de acuerdo con esos requisitos.
+
+En este caso, al instalar \emph{Shorewall} en el firewall externo y como es una máquina \emph{Debian}, no crea los ficheros
+de configuración por defecto, por lo que hay que crearlos. Creamos dentro del directorio \emph{/etc/shorewall/} los siguientes
+archivos de configuración:
+\begin{itemize}
+  \item \textbf{zones:} contiene las definiciones de las zonas de red.
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.65]{img/zones.png}
+    \caption{Configuración de \emph{/etc/shorewall/zones}}
+    \label{fig:Configuracion de /etc/shorewall/zones}
+  \end{figure}
+  \item \textbf{interfaces:} contiene las definiciones de las interfaces de red.
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.65]{img/interfaces.png}
+    \caption{Configuración de \emph{/etc/shorewall/interfaces}}
+    \label{fig:Configuracion de /etc/shorewall/interfaces}
+  \end{figure}
+  \item \textbf{hosts:} contiene las definiciones de los hosts de red.
+  \item \textbf{snat:} contiene las definiciones de \emph{SNAT}. 
+\end{itemize}
+
+
+
+% Para habilitar \emph{NAT} utilizando la configuración de \emph{Shorewall}, se va a 
+% configurar el archivo \emph{snat} en el directorio \emph{/etc/shorewall/} con la
+% siguiente configuración:
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[scale=0.392]{img/snat_config.png}
+%   \caption{Configuración de \emph{snat}}
+%   \label{fig:Configuracion de snat}
+% \end{figure}
+
+% Nueva página
+\cleardoublepage
 
 % Capitulo 3
 \chapter{Configurar el cliente en la red interna y servidor en la DMZ}
