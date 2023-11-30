@@ -339,15 +339,12 @@ iface ens4 inet static
       gateway 192.168.10.2
 \end{verbatim}
 
-
-
-primero se va a instalar el servicio Web
-\emph{nginx} con el siguiente comando:
+y luego se va a instalar el servicio web con el siguiente comando:
 \begin{BVerbatim}
 sudo apt install nginx
 \end{BVerbatim}
 
-Luego, se va a configurar el archivo \emph{/etc/nginx/sites-available/default} y añadimos
+Ahora, se va a configurar el archivo \emph{/etc/nginx/sites-available/default} y añadimos
 el siguiente contenido:
 \begin{verbatim}
 server {
@@ -361,6 +358,8 @@ Una vez configurado el archivo, se va a reiniciar el servicio \emph{nginx} con e
 sudo systemctl restart nginx
 \end{BVerbatim}
 
+A continuación, se va a comprobar que el servicio \emph{nginx} está funcionando correctamente, para ello se vamos a utilizar un navegador de texto 
+en el firewall externo, aqui una captura de pantalla del resultado:
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.55]{img/nginx_fw_externo.png}
