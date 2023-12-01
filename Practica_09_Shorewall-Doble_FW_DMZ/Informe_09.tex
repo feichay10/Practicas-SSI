@@ -226,19 +226,19 @@ sudo yum install NetworkManager-tui
 Una vez instalado \emph{nmtui}, se va a configurar la interfaz que va conectada a la DMZ y a la red interna, queda de la siguiente
 manera:
 \begin{figure}[H]
-  \centering
-  \includegraphics[scale=0.45]{img/fw-interno_interface.png}
-  \caption{Configuración }
-  \label{fig:Configuracion de la intefaz que va conectada a la DMZ y a la red interna}
+  \begin{subfigure}{0.5\textwidth}
+    \centering
+    \includegraphics[scale=0.44]{img/fw-interno_interface_to_DMZ.png}
+    \caption{Interfaz que va conectada a la DMZ}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\textwidth}
+    \centering
+    \includegraphics[scale=0.44]{img/fw-interno_interface_to_LAN.png}
+    \caption{Interfaz que va conectada a la red interna}
+  \end{subfigure}
+  \caption{Configuración de las interfaces en el firewall interno}
 \end{figure}
 
-% Luego, se va a configurar la interfaz que va conectada a la red interna, queda de la siguiente manera:
-% \begin{figure}[H]
-%   \centering
-%   \includegraphics[scale=0.5]{img/fw-interno_to_LAN.png}
-%   \caption{Configuración de la interfaz que va conectada a la red interna}
-%   \label{fig:Configuracion de la interfaz que va conectada a la red interna}
-% \end{figure}
 
 % % Nueva página
 % \cleardoublepage
@@ -326,7 +326,15 @@ archivos de configuración:
 % Capitulo 3
 \chapter{Configurar el cliente en la red interna y servidor en la DMZ}
 \section{Configuración del cliente en la red interna}
-Para configurar el cliente en la red interna, se va a configurar el archivo
+Para configurar el cliente en la red interna, se va a configurar el archivo el archivo \emph{/etc/network/interfaces}
+con la siguiente configuración:
+\begin{verbatim}
+auto ens4
+iface ens4 inet static
+      address 172.16.10.2
+      netmask 255.255.255.0
+      gateway 172.16.10.1
+\end{verbatim}
 
 \section{Configuración del servidor en la DMZ}
 Para configurar el servidor en la DMZ, primero vamos a configurar la interfaz que va conectada a la DMZ, para ello se va a configurar el archivo \emph{/etc/network/interfaces}
@@ -388,12 +396,100 @@ captura de pantalla del resultado:
   \label{fig:Resultado de la prueba del servidor FTP en el firewall externo}
 \end{figure}
 
+Finalmente, para poder acceder con la IP pública del firewall externo, hay que configurar un port forwarding
+a través de añadir reglas de DNAT en \emph{/etc/shorewall/rules}:
+\begin{verbatim}
+#ACTION         SOURCE          DEST                     PROTO   DPORT
+DNAT            net             dmz:192.168.10.100       tcp     20
+DNAT            net             dmz:192.168.10.100       tcp     21
+DNAT            net             fw:192.168.10.2          tcp     22
+DNAT            net             dmz:192.168.10.100       tcp     80
+\end{verbatim}
+
+Tras poner las reglas, ya se puede acceder al servidor web desde el exterior:
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.55]{img/nginx_navegador.png}
+  \caption{Resultado de la prueba del servidor web en el navegador}
+  \label{fig:resultado de la prueba del servidor web en el navegador}
+\end{figure}
+
 % Nueva página
 \cleardoublepage
 
 \chapter{Configurar el firewall con unas políticas por defecto: }
+Antes de configurar las políticas por defecto, hay que configurar las zonas. Esto lo haremos en el firewall interno.
+\emph{firewalld} viene preconfigurado con las DMZ e interna, pero hay que agregar las redes que tenemos a esa zonas. 
+Para ello, se va a utilizar los siguientes comandos:
+\begin{verbatim}
+firewall-cmd --zone=dmz --add-source=192.168.10.0/24
+firewall-cmd --zone=internal --add-source=172.16.10.0/24
+\end{verbatim}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.65]{img/resultado_politicas_por_defecto.png}
+  \caption{Políticas por defecto}
+  \label{fig:politicas por defecto}
+\end{figure}
 
+\begin{itemize}
+  \item \textbf{ACCEPT para tráfico FW a DMZ y FW a Red Interna}
+  \begin{verbatim}
+firewall-cmd --permanent --new-policy FWToDMZ
+firewall-cmd --permanent --policy FWToDMZ --set-target ACCEPT
+firewall-cmd --permanent --policy FWToDMZ --add-ingress-zone HOST
+firewall-cmd --permanent --policy FWToDMZ --add-egress-zone dmz
+firewall-cmd --permanent --new-policy FWToInt
+firewall-cmd --permanent --policy FWToInt --set-target ACCEPT
+firewall-cmd --permanent --policy FWToInt --add-ingress-zone HOST
+firewall-cmd --permanent --policy FWToInt --add-egress-zone internal
+  \end{verbatim}
 
+  \item \textbf{ACCEPT para tráfico Red Interna a DMZ}
+  \begin{verbatim}
+firewall-cmd --permanent --new-policy IntToDMZ
+firewall-cmd --permanent --policy IntToDMZ --set-target ACCEPT
+firewall-cmd --permanent --policy IntToDMZ --add-ingress-zone internal
+firewall-cmd --permanent --policy IntToDMZ --add-egress-zone dmz
+  \end{verbatim}
+
+  \item \textbf{ACCEPT para tráfico Red Interna a Internet}
+  \begin{verbatim}
+firewall-cmd --permanent --new-policy IntToNet
+firewall-cmd --permanent --policy IntToNet --set-target ACCEPT
+firewall-cmd --permanent --policy IntToNet --add-ingress-zone internal
+firewall-cmd --permanent --policy IntToNet --add-egress-zone ANY
+  \end{verbatim}
+
+  \item \textbf{REJECT para tráfico DMZ a Red Interna e Internet a DMZ}
+  \begin{verbatim}
+firewall-cmd --permanent --new-policy DMZToInt
+firewall-cmd --permanent --policy DMZToInt --set-target REJECT
+firewall-cmd --permanent --policy DMZToInt --add-ingress-zone dmz
+firewall-cmd --permanent --policy DMZToInt --add-egress-zone internal
+firewall-cmd --permanent --new-policy DMZToNet
+firewall-cmd --permanent --policy DMZToNet --set-target REJECT
+firewall-cmd --permanent --policy DMZToNet --add-ingress-zone dmz
+firewall-cmd --permanent --policy DMZToNet --add-egress-zone ANY
+  \end{verbatim}
+
+  \item \textbf{DROP para tráfico Internet a FW e Internet a Red Interna}
+  \begin{verbatim}
+firewall-cmd --permanent --new-policy NetToFW
+firewall-cmd --permanent --policy NetToFW --set-target DROP
+firewall-cmd --permanent --policy NetToFW --add-ingress-zone external
+firewall-cmd --permanent --policy NetToFW --add-egress-zone HOST
+firewall-cmd --permanent --new-policy NetToInt
+firewall-cmd --permanent --policy NetToInt --set-target DROP
+firewall-cmd --permanent --policy NetToInt --add-ingress-zone external
+firewall-cmd --permanent --policy NetToInt --add-egress-zone internal
+  \end{verbatim}
+\end{itemize}
+
+% Nueva página
+\cleardoublepage
+
+\chapter{Configurar reglas utilizando Macros para permitir el tráfico necesario}
 
 % Nueva página
 \cleardoublepage
