@@ -223,18 +223,21 @@ el siguiente comando:
 sudo yum install NetworkManager-tui
 \end{BVerbatim}
 
+Ya instalado, iniciamos el servicio con el siguiente comando:
+\begin{BVerbatim}
+sudo systemctl start NetworkManager
+\end{BVerbatim}
+
 Una vez instalado \emph{nmtui}, se va a configurar la interfaz que va conectada a la DMZ y a la red interna, queda de la siguiente
 manera:
 \begin{figure}[H]
   \begin{subfigure}{0.5\textwidth}
     \centering
-    \includegraphics[scale=0.44]{img/fw-interno_interface_to_DMZ.png}
-    \caption{Interfaz que va conectada a la DMZ}
+    \includegraphics[scale=0.42]{img/fw-interno_interface_to_DMZ.png}
   \end{subfigure}%
   \begin{subfigure}{0.5\textwidth}
     \centering
-    \includegraphics[scale=0.44]{img/fw-interno_interface_to_LAN.png}
-    \caption{Interfaz que va conectada a la red interna}
+    \includegraphics[scale=0.42]{img/fw-interno_interface_to_LAN.png}
   \end{subfigure}
   \caption{Configuración de las interfaces en el firewall interno}
 \end{figure}
@@ -271,21 +274,27 @@ en el servidor, en el cliente y en el firewall interno.
 % Capitulo 2
 \chapter{Habilitar \emph{NAT} utilizando la configuración de \emph{Shorewall}}
 Para habilitar \emph{NAT}, lo haremos en el firewall externo ya que es el que está conectado 
-a Internet. Para ello, primero habilitaremos el \emph{forwarding} y lo haremos configurando el
+a Internet. Para hacerlo usaremos \emph{Shorewall}, que describe los requisitos de firewall utilizando entradas en un 
+conjunto de archivos de configuración. Shorewall lee esos archivos de configuración y, 
+con la ayuda de las utilidades \emph{iptables}, \emph{iptables-restore}, \emph{ip} y \emph{tc} configura 
+el \emph{Netfilter} y el tráfico de red relacionado de acuerdo con esos requisitos.
+
+La instalación de este programa se va a utilizar el siguiente comando:
+\begin{BVerbatim}
+sudo apt install shorewall
+\end{BVerbatim}
+
+Para habilitar el \emph{forwarding} lo haremos configurando el
 fichero \emph{/etc/shorewall/shorewall.conf} con la siguiente configuración:
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.7]{img/forwarding_shorewall.png}
+  \includegraphics[scale=0.8]{img/forwarding_shorewall.png}
   \caption{Configuración de \emph{forwarding} en \emph{Shorewall}}
   \label{fig:Configuracion de forwarding en Shorewall}
 \end{figure}
 
 Una vez habilitado el \emph{forwarding}, se va a configurar los diferentes archivos de configuracion
-de \emph{Shorewall}. \emph{Shorewall} describe los requisitos de firewall utilizando entradas en un 
-conjunto de archivos de configuración. Shorewall lee esos archivos de configuración y, 
-con la ayuda de las utilidades \emph{iptables}, \emph{iptables-restore}, \emph{ip} y \emph{tc} configura 
-el \emph{Netfilter} y el tráfico de red relacionado de acuerdo con esos requisitos.
-
+de \emph{Shorewall}.
 En este caso, al instalar \emph{Shorewall} en el firewall externo y como es una máquina \emph{Debian}, no crea los ficheros
 de configuración por defecto, por lo que hay que crearlos. Creamos dentro del directorio \emph{/etc/shorewall/} los siguientes
 archivos de configuración:
@@ -293,28 +302,32 @@ archivos de configuración:
   \item \textbf{zones:} declara las zonas de red.
   \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.55]{img/zones.png}
+    \includegraphics[scale=0.7]{img/zones.png}
     \caption{Configuración de \emph{/etc/shorewall/zones}}
     \label{fig:Configuracion de /etc/shorewall/zones}
   \end{figure}
+
+  % Nueva página
+  \cleardoublepage
+
   \item \textbf{interfaces:} define las interfaces de red del firewall.
   \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.55]{img/interfaces.png}
+    \includegraphics[scale=0.65]{img/interfaces.png}
     \caption{Configuración de \emph{/etc/shorewall/interfaces}}
     \label{fig:Configuracion de /etc/shorewall/interfaces}
   \end{figure}
   \item \textbf{hosts:} define zonas en terminos de subredes y/o direcciones IP individuales.
   \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.55]{img/hosts.png}
+    \includegraphics[scale=0.7]{img/hosts.png}
     \caption{Configuración de \emph{/etc/shorewall/hosts}}
     \label{fig:Configuracion de /etc/shorewall/hosts}
   \end{figure}
   \item \textbf{snat:} contiene las definiciones de \emph{SNAT}. 
   \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.55]{img/snat_config.png}
+    \includegraphics[scale=0.65]{img/snat_config.png}
     \caption{Configuración de \emph{/etc/shorewall/snat}}
     \label{fig:Configuracion de /etc/shorewall/snat}
   \end{figure}
