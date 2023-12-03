@@ -418,6 +418,16 @@ Tras poner las reglas, ya se puede acceder al servidor web desde el exterior:
 \cleardoublepage
 
 \chapter{Configurar el firewall con unas políticas por defecto: }
+Antes de empezar a configurar el firewall instalamos en el firewall interno \emph{firewalld} con el siguiente comando:
+\begin{BVerbatim}
+sudo yum install firewalld
+\end{BVerbatim}
+, y lo iniciamos con el siguiente comando: \\
+\begin{BVerbatim}
+sudo systemctl start firewalld
+\end{BVerbatim}
+
+
 Antes de configurar las políticas por defecto, hay que configurar las zonas. Esto lo haremos en el firewall interno.
 \emph{firewalld} viene preconfigurado con las DMZ e interna, pero hay que agregar las redes que tenemos a esa zonas. 
 Para ello, se va a utilizar los siguientes comandos:
@@ -444,9 +454,21 @@ firewall-cmd --permanent --policy FWToInt --set-target ACCEPT
 firewall-cmd --permanent --policy FWToInt --add-ingress-zone HOST
 firewall-cmd --permanent --policy FWToInt --add-egress-zone internal
   \end{verbatim}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.65]{img/accept_fw_to_dmz_fw_Int.png}
+    \caption{ACCEPT para tráfico FW a DMZ y FW a Red Interna}
+    \label{fig:ACCEPT para tráfico FW a DMZ y FW a Red Interna}
+  \end{figure}
 
   \item \textbf{ACCEPT para tráfico Red Interna a DMZ}
   \begin{verbatim}
+firewall-cmd --zone=internal --add-service=any --permanent
+firewall-cmd --zone=internal --add-source=192.168.10.100 --permanent
+
+    
+
+
 firewall-cmd --permanent --new-policy IntToDMZ
 firewall-cmd --permanent --policy IntToDMZ --set-target ACCEPT
 firewall-cmd --permanent --policy IntToDMZ --add-ingress-zone internal
@@ -499,7 +521,9 @@ firewall-cmd --permanent --policy NetToInt --add-egress-zone internal
 \item Oliveros, D. (2013, 14 de marzo). Configurar Shorewall en Debian. Dayron Oliveros. Recuperado de \url{https://www.youtube.com/watch?v=20E0QxWwAlk}
 \item Thomas M. Eastep. (2020). snat — Shorewall SNAT/Masquerade definition file. Shorewall. Recuperado de \url{https://shorewall.org/manpages/shorewall-snat.html}
 \item Thomas M. Eastep. (2020). interfaces — Shorewall interfaces file. Shorewall. Recuperado de \url{https://shorewall.org/manpages/shorewall-interfaces.html}
-\item De Luz, S. (2023). Servidor FTP ProFTPd para Linux: Instalación y configuración. Redes Zone. Recuperado de \url{https://www.redeszone.net/tutoriales/servidores/proftpd/}
+\item Luz, S. (2023). Servidor FTP ProFTPd para Linux: Instalación y configuración. Redes Zone. Recuperado de \url{https://www.redeszone.net/tutoriales/servidores/proftpd/}
+\item Alonsojpd. (2022). Solución al error Failed to download metadata for repo appstream en CentOS 8. Proyectoa. Recuperado de \url{https://proyectoa.com/solucion-al-error-failed-to-download-metadata-for-repo-appstream-en-centos-8/}
+\item firewalld. (s.f.). Concepts and Configuration. firewalld. Recuperado de \url{https://firewalld.org/documentation/concepts.html}
 \end{enumerate}
 
 \end{document}
