@@ -450,7 +450,7 @@ firewall-cmd --zone=internal --add-source=172.16.10.0/24
 \end{verbatim}
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.65]{img/resultado_politicas_por_defecto.png}
+  \includegraphics[scale=0.5]{img/resultado_politicas_por_defecto.png}
   \caption{Políticas por defecto}
   \label{fig:politicas por defecto}
 \end{figure}
@@ -469,24 +469,30 @@ firewall-cmd --permanent --policy FWToInt --add-egress-zone internal
   \end{verbatim}
   \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.65]{img/accept_fw_to_dmz_fw_Int.png}
+    \includegraphics[scale=0.55]{img/accept_fw_to_dmz_fw_Int.png}
     \caption{ACCEPT para tráfico FW a DMZ y FW a Red Interna}
     \label{fig:ACCEPT para tráfico FW a DMZ y FW a Red Interna}
   \end{figure}
 
   \item \textbf{ACCEPT para tráfico Red Interna a DMZ}
   \begin{verbatim}
-firewall-cmd --zone=internal --add-service=any --permanent
-firewall-cmd --zone=internal --add-source=192.168.10.100 --permanent
-
-    
-
-
 firewall-cmd --permanent --new-policy IntToDMZ
 firewall-cmd --permanent --policy IntToDMZ --set-target ACCEPT
 firewall-cmd --permanent --policy IntToDMZ --add-ingress-zone internal
 firewall-cmd --permanent --policy IntToDMZ --add-egress-zone dmz
   \end{verbatim}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.55]{img/accept_int_to_dmz.png}
+    \caption{ACCEPT para tráfico Red Interna a DMZ}
+    \label{fig:ACCEPT para tráfico Red Interna a DMZ}
+  \end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.63]{img/funcionamiento_int_to_dmz.png}
+    \caption{funcionamiento del ACCEPT para tráfico Red Interna a DMZ}
+    \label{fig:funcionamiento ACCEPT para tráfico Red Interna a DMZ}
+  \end{figure}
 
   \item \textbf{ACCEPT para tráfico Red Interna a Internet}
   \begin{verbatim}
@@ -495,6 +501,16 @@ firewall-cmd --permanent --policy IntToNet --set-target ACCEPT
 firewall-cmd --permanent --policy IntToNet --add-ingress-zone internal
 firewall-cmd --permanent --policy IntToNet --add-egress-zone ANY
   \end{verbatim}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.55]{img/accept_int_to_net.png}
+    \caption{ACCEPT para tráfico Red Interna a Internet}
+    \label{fig:ACCEPT para tráfico Red Interna a Internet}
+  \end{figure}
+
+  \begin{figure}[H]
+    \centering \textbf{PONER FOTO FUNCIONAMIENTO }
+  \end{figure}
 
   \item \textbf{REJECT para tráfico DMZ a Red Interna e Internet a DMZ}
   \begin{verbatim}
@@ -502,10 +518,6 @@ firewall-cmd --permanent --new-policy DMZToInt
 firewall-cmd --permanent --policy DMZToInt --set-target REJECT
 firewall-cmd --permanent --policy DMZToInt --add-ingress-zone dmz
 firewall-cmd --permanent --policy DMZToInt --add-egress-zone internal
-firewall-cmd --permanent --new-policy DMZToNet
-firewall-cmd --permanent --policy DMZToNet --set-target REJECT
-firewall-cmd --permanent --policy DMZToNet --add-ingress-zone dmz
-firewall-cmd --permanent --policy DMZToNet --add-egress-zone ANY
   \end{verbatim}
 
   \item \textbf{DROP para tráfico Internet a FW e Internet a Red Interna}
