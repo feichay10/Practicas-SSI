@@ -519,6 +519,21 @@ firewall-cmd --permanent --policy DMZToInt --set-target REJECT
 firewall-cmd --permanent --policy DMZToInt --add-ingress-zone dmz
 firewall-cmd --permanent --policy DMZToInt --add-egress-zone internal
   \end{verbatim}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.58]{img/reject_dmz_to_int.png}
+    \caption{REJECT para tráfico DMZ a Red Interna}
+    \label{fig:REJECT para tráfico DMZ a Red Interna}
+  \end{figure}
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.49]{img/funcionamiento_reject.png}
+    \caption{Funcionamiento del REJECT para tráfico DMZ a Red Interna}
+  \end{figure}
+
+  % Nueva página
+  \cleardoublepage
 
   \item \textbf{DROP para tráfico Internet a FW e Internet a Red Interna}
   \begin{verbatim}
@@ -531,12 +546,41 @@ firewall-cmd --permanent --policy NetToInt --set-target DROP
 firewall-cmd --permanent --policy NetToInt --add-ingress-zone external
 firewall-cmd --permanent --policy NetToInt --add-egress-zone internal
   \end{verbatim}
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.58]{img/drop_net_to_network.png}
+    \caption{DROP para tráfico Internet a Red Interna e Internet a FW}
+  \end{figure}
+
 \end{itemize}
 
 % Nueva página
 \cleardoublepage
 
 \chapter{Configurar reglas utilizando Macros para permitir el tráfico necesario}
+\begin{itemize}
+  \item \textbf{Tráfico DNS para la resolución de nombres al servidor DNS externo}
+  \begin{verbatim}
+firewall-cmd --permanent --policy NetToInt --add-service=dns
+firewall-cmd --permanent --policy NetToFW --add-service=dns
+  \end{verbatim}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.75]{img/dns.png}
+    \caption{Tráfico DNS para la resolución de nombres al servidor DNS externo}
+  \end{figure}
+
+  \item \textbf{Tráfico Web desde la red Interna al servidor web de la DMZ}
+  \begin{verbatim}
+firewall-cmd --permanent --policy IntToDMZ --add-service=http
+  \end{verbatim}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.655]{img/http.png}
+    \caption{Tráfico Web desde la red Interna al servidor web de la DMZ}
+  \end{figure}
+\end{itemize}
 
 % Nueva página
 \cleardoublepage
