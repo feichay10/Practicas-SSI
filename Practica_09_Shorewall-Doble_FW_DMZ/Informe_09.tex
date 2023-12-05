@@ -409,24 +409,6 @@ captura de pantalla del resultado:
   \label{fig:Resultado de la prueba del servidor FTP en el firewall externo}
 \end{figure}
 
-Finalmente, para poder acceder con la IP pública del firewall externo, hay que configurar un port forwarding
-a través de añadir reglas de DNAT en \emph{/etc/shorewall/rules}:
-\begin{verbatim}
-#ACTION         SOURCE          DEST                     PROTO   DPORT
-DNAT            net             dmz:192.168.10.100       tcp     20
-DNAT            net             dmz:192.168.10.100       tcp     21
-DNAT            net             fw:192.168.10.2          tcp     22
-DNAT            net             dmz:192.168.10.100       tcp     80
-\end{verbatim}
-
-Tras poner las reglas, ya se puede acceder al servidor web desde el exterior:
-\begin{figure}[H]
-  \centering
-  \includegraphics[scale=0.55]{img/nginx_navegador.png}
-  \caption{Resultado de la prueba del servidor web en el navegador}
-  \label{fig:resultado de la prueba del servidor web en el navegador}
-\end{figure}
-
 % Nueva página
 \cleardoublepage
 
@@ -447,13 +429,19 @@ Para ello, se va a utilizar los siguientes comandos:
 \begin{verbatim}
 firewall-cmd --zone=dmz --add-source=192.168.10.0/24
 firewall-cmd --zone=internal --add-source=172.16.10.0/24
+firewall-cmd --zone=external --add-interface=ens4
 \end{verbatim}
+
+En la configuración de la zona exterior ponemos la interfaz que va hacia Internet, en este caso es \emph{ens4}.
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.5]{img/resultado_politicas_por_defecto.png}
   \caption{Políticas por defecto}
   \label{fig:politicas por defecto}
 \end{figure}
+
+% Nueva página
+\cleardoublepage
 
 \begin{itemize}
   \item \textbf{ACCEPT para tráfico FW a DMZ y FW a Red Interna}
@@ -565,11 +553,41 @@ firewall-cmd --permanent --policy NetToInt --add-egress-zone internal
 firewall-cmd --permanent --policy NetToInt --add-service=dns
 firewall-cmd --permanent --policy NetToFW --add-service=dns
   \end{verbatim}
+%   Además, desde el firewall externo creamos unas nuevas reglas en el fichero \emph{/etc/shorewall/rules}
+%   para permitir el tráfico DNS:
+%   \begin{verbatim}
+% #ACTION         SOURCE          DEST                    PROTO           DPORT 
+% ACCEPT          net             dmz                     udp             53
+% ACCEPT          net             loc                     udp             53
+%   \end{verbatim}
+
   \begin{figure}[H]
     \centering
     \includegraphics[scale=0.75]{img/dns.png}
     \caption{Tráfico DNS para la resolución de nombres al servidor DNS externo}
   \end{figure}
+
+  \item \textbf{Tráfico de cualquier tipo desde la red interna a servidores de Internet}
+
+  \item \textbf{Tráfico Web y FTP desde Internet al servidor web}
+  En este caso, hay que redirigir el tráfico del puerto 80 de la IP pública de Internet del
+  firewall al servidor Web en la DMZ. 
+  % Para ello, se va a configurar un port forwarding a través de añadir reglas de DNAT en \emph{/etc/shorewall/rules}:
+%   \begin{verbatim}
+% #ACTION         SOURCE          DEST                     PROTO   DPORT
+% DNAT            net             dmz:192.168.10.100       tcp     20
+% DNAT            net             dmz:192.168.10.100       tcp     21
+% DNAT            net             fw:192.168.10.2          tcp     22
+% DNAT            net             dmz:192.168.10.100       tcp     80
+%   \end{verbatim}
+
+%   Tras poner las reglas, ya se puede acceder al servidor web desde el exterior:
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[scale=0.55]{img/nginx_navegador.png}
+%   \caption{Resultado de la prueba del servidor web en el navegador}
+%   \label{fig:resultado de la prueba del servidor web en el navegador}
+% \end{figure}
 
   \item \textbf{Tráfico Web desde la red Interna al servidor web de la DMZ}
   \begin{verbatim}
@@ -580,6 +598,8 @@ firewall-cmd --permanent --policy IntToDMZ --add-service=http
     \includegraphics[scale=0.655]{img/http.png}
     \caption{Tráfico Web desde la red Interna al servidor web de la DMZ}
   \end{figure}
+
+
 \end{itemize}
 
 % Nueva página
