@@ -45,3 +45,10 @@ firewall-cmd --permanent --new-policy NetToInt
 firewall-cmd --permanent --policy NetToInt --set-target DROP
 firewall-cmd --permanent --policy NetToInt --add-ingress-zone external
 firewall-cmd --permanent --policy NetToInt --add-egress-zone internal
+
+# Trafico DNS para resolucion de nombres al servidor DNS externo
+firewall-cmd --permanent --policy NetToInt --add-service=dns
+firewall-cmd --permanent --policy NetToFW --add-service=dns
+
+# Tráfico Web desde la red Interna al servidor web de la DMZ
+firewall-cmd --permanent --policy IntToDMZ --add-service=http
