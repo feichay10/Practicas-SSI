@@ -176,7 +176,7 @@
 \chapter{Configuración de red con dos firewalls y tres zonas}
 Esta práctica se va a realizar una configuracion de un firewall con DMZ utilizando
 \emph{Shorewall} y \emph{firewalld}. Se va a implementar un diseño con doble firewall
-(Interno con \emph{firewalld} y externo con \emph{Shorewall}) con dos interfaces para
+(interno con \emph{firewalld} y externo con \emph{Shorewall}) con dos interfaces para
 gestionar las zonas de Internet, DMZ y LAN. La DMZ se localiza entre los dos firewalls 
 configurados.
 
@@ -216,7 +216,7 @@ sudo systemctl restart networking
 
 \section{Configuración de la red en el firewall interno}
 Para la configuración de la red en el firewall interno, se va a configurar dos interfaces, una
-que va conectada a la DMZ y otra que va conectada a la red interna. Como esta máquina es un \emph{CentOS},
+que va conectada a la DMZ y otra que va conectada a la red interna. Como esta máquina es un \emph{CentOS 8},
 la configuración de la red lo haremos con \emph{nmtui}. Para la instalación de \emph{nmtui}, se va a utilizar
 el siguiente comando:
 \begin{BVerbatim}
@@ -273,6 +273,13 @@ en el servidor, en el cliente y en el firewall interno.
 
 % Capitulo 2
 \chapter{Habilitar \emph{NAT} utilizando la configuración de \emph{Shorewall}}
+Antes de empezar con al configuración del \emph{NAT}, hay que asegurarse que en los dos firewalls esté
+habilitado el reenvío de paquetes IP o \emph{IP forwarding}. Para ello, se va a utilizar el siguiente comando:
+\begin{BVerbatim}
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
+\end{BVerbatim}
+
+
 Para habilitar \emph{NAT}, lo haremos en el firewall externo ya que es el que está conectado 
 a Internet. Para hacerlo usaremos \emph{Shorewall}, que describe los requisitos de firewall utilizando entradas en un 
 conjunto de archivos de configuración. Shorewall lee esos archivos de configuración y, 
@@ -370,7 +377,7 @@ el siguiente contenido:
 \begin{verbatim}
 server {
   listen 192.168.10.100:80;
-  server_name 10.6.128.84;
+  server_name 10.6.129.75;
 }
 \end{verbatim}
 
@@ -462,6 +469,16 @@ firewall-cmd --permanent --policy FWToInt --add-egress-zone internal
     \label{fig:ACCEPT para tráfico FW a DMZ y FW a Red Interna}
   \end{figure}
 
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.75]{img/result_accept_fw_to_dmz_int.png}
+    \caption{Resultado de ACCEPT para tráfico FW a DMZ y FW a Red Interna}
+    \label{fig:Resultado de ACCEPT para tráfico FW a DMZ y FW a Red Interna}
+  \end{figure}
+
+  % Nueva pagina
+  \cleardoublepage
+
   \item \textbf{ACCEPT para tráfico Red Interna a DMZ}
   \begin{verbatim}
 firewall-cmd --permanent --new-policy IntToDMZ
@@ -482,6 +499,9 @@ firewall-cmd --permanent --policy IntToDMZ --add-egress-zone dmz
     \label{fig:funcionamiento ACCEPT para tráfico Red Interna a DMZ}
   \end{figure}
 
+  % Nueva pagina
+  \cleardoublepage
+
   \item \textbf{ACCEPT para tráfico Red Interna a Internet}
   \begin{verbatim}
 firewall-cmd --permanent --new-policy IntToNet
@@ -491,13 +511,16 @@ firewall-cmd --permanent --policy IntToNet --add-egress-zone ANY
   \end{verbatim}
   \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.55]{img/accept_int_to_net.png}
+    \includegraphics[scale=0.5]{img/accept_int_to_net.png}
     \caption{ACCEPT para tráfico Red Interna a Internet}
     \label{fig:ACCEPT para tráfico Red Interna a Internet}
   \end{figure}
 
   \begin{figure}[H]
-    \centering \textbf{PONER FOTO FUNCIONAMIENTO }
+    \centering
+    \includegraphics[scale=0.61]{img/result_accept_int_to_net.png}
+    \caption{Resultado de ACCEPT para tráfico Red Interna a Internet}
+    \label{fig:Resultado ACCEPT para tráfico Red Interna a Internet}
   \end{figure}
 
   \item \textbf{REJECT para tráfico DMZ a Red Interna e Internet a DMZ}
@@ -509,7 +532,7 @@ firewall-cmd --permanent --policy DMZToInt --add-egress-zone internal
   \end{verbatim}
   \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.58]{img/reject_dmz_to_int.png}
+    \includegraphics[scale=0.51]{img/reject_dmz_to_int.png}
     \caption{REJECT para tráfico DMZ a Red Interna}
     \label{fig:REJECT para tráfico DMZ a Red Interna}
   \end{figure}
@@ -548,18 +571,19 @@ firewall-cmd --permanent --policy NetToInt --add-egress-zone internal
 
 \chapter{Configurar reglas utilizando Macros para permitir el tráfico necesario}
 \begin{itemize}
-  \item \textbf{Tráfico DNS para la resolución de nombres al servidor DNS externo}
-  \begin{verbatim}
+  \item \textbf{Tráfico DNS para la resolución de nombres al servidor DNS externo} 
+  \\ \\
+  \begin{BVerbatim}
 firewall-cmd --permanent --policy NetToInt --add-service=dns
 firewall-cmd --permanent --policy NetToFW --add-service=dns
+  \end{BVerbatim} 
+  \\ \\
+  Luego en el firewall externo se añade la siguiente regla al fichero \emph{/etc/shorewall/rules}:
+  \begin{verbatim}
+#ACTION         SOURCE          DEST                    PROTO           DPORT
+ACCEPT          net             dmz                     udp             53
+ACCEPT          net             loc                     udp             53
   \end{verbatim}
-%   Además, desde el firewall externo creamos unas nuevas reglas en el fichero \emph{/etc/shorewall/rules}
-%   para permitir el tráfico DNS:
-%   \begin{verbatim}
-% #ACTION         SOURCE          DEST                    PROTO           DPORT 
-% ACCEPT          net             dmz                     udp             53
-% ACCEPT          net             loc                     udp             53
-%   \end{verbatim}
 
   \begin{figure}[H]
     \centering
@@ -567,38 +591,111 @@ firewall-cmd --permanent --policy NetToFW --add-service=dns
     \caption{Tráfico DNS para la resolución de nombres al servidor DNS externo}
   \end{figure}
 
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.65]{img/dns_ull.png}
+    \caption{Funcionamiento del tráfico DNS para la resolución de nombres al servidor DNS externo}
+  \end{figure}
+
+  % Nueva página
+  \cleardoublepage
+
   \item \textbf{Tráfico de cualquier tipo desde la red interna a servidores de Internet}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.75]{img/internet_on_client.png}
+    \caption{\emph{PING} a google.es desde el cliente}
+  \end{figure}
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{img/links_google.png}
+    \caption{Acceso a google.es desde el cliente mediante el navegador \emph{links}}
+  \end{figure}
+
+  % Nueva página
+  \cleardoublepage
 
   \item \textbf{Tráfico Web y FTP desde Internet al servidor web}
-  En este caso, hay que redirigir el tráfico del puerto 80 de la IP pública de Internet del
-  firewall al servidor Web en la DMZ. 
-  % Para ello, se va a configurar un port forwarding a través de añadir reglas de DNAT en \emph{/etc/shorewall/rules}:
-%   \begin{verbatim}
-% #ACTION         SOURCE          DEST                     PROTO   DPORT
-% DNAT            net             dmz:192.168.10.100       tcp     20
-% DNAT            net             dmz:192.168.10.100       tcp     21
-% DNAT            net             fw:192.168.10.2          tcp     22
-% DNAT            net             dmz:192.168.10.100       tcp     80
-%   \end{verbatim}
+  
+  En el firewall externo, en el fichero \emph{/etc/shorewall/rules} se añade la siguiente regla:
+  \begin{verbatim}
+#ACTION         SOURCE          DEST                    PROTO           DPORT
+DNAT            net             dmz:192.168.10.100      tcp             20
+DNAT            net             dmz:192.168.10.100      tcp             21
+DNAT            net             dmz:192.168.10.100      tcp             80
+ACCEPT          net             dmz:192.168.10.100      tcp             http,ftp
+  \end{verbatim}
 
-%   Tras poner las reglas, ya se puede acceder al servidor web desde el exterior:
-% \begin{figure}[H]
-%   \centering
-%   \includegraphics[scale=0.55]{img/nginx_navegador.png}
-%   \caption{Resultado de la prueba del servidor web en el navegador}
-%   \label{fig:resultado de la prueba del servidor web en el navegador}
-% \end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.65]{img/nginx_navegador.png}
+    \caption{Acceso al servidor web de la DMZ desde un navegador}
+  \end{figure}
 
   \item \textbf{Tráfico Web desde la red Interna al servidor web de la DMZ}
   \begin{verbatim}
 firewall-cmd --permanent --policy IntToDMZ --add-service=http
   \end{verbatim}
+  Y en el firewall externo, en el fichero \emph{/etc/shorewall/rules} se añade la siguiente regla:
+  \\ \\
+  \begin{BVerbatim}[fontsize=\fontsize{9}{10}]
+#ACTION         SOURCE          DEST                    PROTO           DPORT   SPORT   ORIGDEST
+DNAT            loc             dmz:192.168.10.100      tcp             80      -       &NET_IF
+  \end{BVerbatim}
+
   \begin{figure}[H]
     \centering
     \includegraphics[scale=0.655]{img/http.png}
     \caption{Tráfico Web desde la red Interna al servidor web de la DMZ}
   \end{figure}
 
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.655]{img/nginx_cliente.png}
+    \caption{Acceso al servidor web de la DMZ desde el cliente con direccion publica y privada}
+  \end{figure}
+
+  % Nueva página
+  \cleardoublepage
+
+  \item \textbf{Configuracion final del \emph{Shorewall} en los ficheros \emph{rules} y \emph{policy}}
+  \begin{itemize}
+    \item \textbf{Fichero \emph{rules}} \\ \\
+    \begin{BVerbatim}[fontsize=\fontsize{9}{10}]
+#ACTION         SOURCE          DEST                    PROTO           DPORT   SPORT   ORIGDEST
+ACCEPT          net             fw                      tcp             ssh
+ACCEPT          fw              dmz                     tcp             ssh
+ACCEPT          fw              loc                     tcp             ssh
+DNAT            net             dmz:192.168.10.100      tcp             20
+DNAT            net             dmz:192.168.10.100      tcp             21
+DNAT            net             fw:192.168.10.2         tcp             22
+DNAT            net             dmz:192.168.10.100      tcp             80
+DNAT            loc             dmz:192.168.10.100      tcp             80      -       &NET_IF
+ACCEPT          net             dmz                     udp             53
+ACCEPT          net             loc                     udp             53
+ACCEPT          loc             net
+ACCEPT          net             dmz:192.168.10.100      tcp             http,ftp
+ACCEPT          loc             dmz:192.168.10.100      tcp             http
+    \end{BVerbatim}
+
+    \item \textbf{Fichero \emph{policy}}
+    \begin{verbatim}
+#SOURCE         DEST            POLICY          LOG LEVEL
+fw              dmz             ACCEPT          info
+fw              loc             ACCEPT          info
+fw              net             ACCEPT
+loc             net             ACCEPT          info
+loc             fw              ACCEPT          info
+loc             dmz             ACCEPT          info
+net             dmz             REJECT          info
+net             fw              DROP            info
+net             loc             REJECT          info
+dmz             fw              ACCEPT          info
+dmz             loc             ACCEPT          info
+dmz             net             ACCEPT          info
+    \end{verbatim}
+  \end{itemize}
 
 \end{itemize}
 
