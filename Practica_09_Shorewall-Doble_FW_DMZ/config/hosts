@@ -1,0 +1,3 @@
+#ZONE   HOST(S)                 OPTIONS
+loc     LOC_IF:172.16.10.0/24
+dmz     LOC_IF:192.168.10.0/24

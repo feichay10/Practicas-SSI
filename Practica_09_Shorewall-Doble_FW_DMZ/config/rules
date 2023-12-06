@@ -1,0 +1,14 @@
+#ACTION         SOURCE          DEST                    PROTO           DPORT   SPORT   ORIGDEST
+ACCEPT          net             fw                      tcp             ssh
+ACCEPT          fw              dmz                     tcp             ssh
+ACCEPT          fw              loc                     tcp             ssh
+DNAT            net             dmz:192.168.10.100      tcp             20
+DNAT            net             dmz:192.168.10.100      tcp             21
+DNAT            net             fw:192.168.10.2         tcp             22
+DNAT            net             dmz:192.168.10.100      tcp             80
+DNAT            loc             dmz:192.168.10.100      tcp             80      -       &NET_IF
+ACCEPT          net             dmz                     udp             53
+ACCEPT          net             loc                     udp             53
+ACCEPT          loc             net
+ACCEPT          net             dmz:192.168.10.100      tcp             http,ftp
+ACCEPT          loc             dmz:192.168.10.100      tcp             http

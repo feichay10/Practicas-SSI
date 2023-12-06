@@ -1,0 +1,3 @@
+# ZONE  INTERFACE       BROADCAST       OPTIONS
+net     NET_IF          -               tcpflags,dhcp,nosmurfs,routefilter,logmartians,sourceroute=0,physical=ens3
+-       LOC_IF          -               tcpflags,nosmurfs,routefilter,logmartians,physical=ens8
