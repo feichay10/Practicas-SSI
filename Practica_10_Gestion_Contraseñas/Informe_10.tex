@@ -1,3 +1,4 @@
+% !TeX encoding = UTF-8
 \documentclass[11pt]{report}
 
 % Paquetes y configuraciones adicionales
@@ -19,6 +20,8 @@
 
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{bashful}
+\usepackage{bookmark}
 
 \usepackage[spanish]{babel}
 
@@ -83,7 +86,7 @@
   captionpos=b,                    
   keepspaces=true,                 
   numbers=left,                    
-  numbersep=5pt,                  
+  numbersep=11pt,                  
   showspaces=false,                
   showstringspaces=false,
   showtabs=false,                  
@@ -234,7 +237,76 @@ sudo apt-get install john
 
 % Capitulo 2
 \chapter{Generar un fichero de contraseñas con hashes MD5}
+Para generar un fichero de contraseñas con hashes MD5, se utilizará la herramienta \emph{makepasswd} pero 
+como se está usando una máquina virtual del IAAS de la ULL y estas máquinas tienen
+baja entropía en el generador de números aleatorios, hay que instalar y configurar \emph{haveged} para
+resolverlo. Para ello, se ejecuta el siguiente comando:
+\begin{BVerbatim}
+sudo apt-get install haveged
+\end{BVerbatim}
+y configuramos el fichero \emph{/etc/default/haveged} asegurando que la variable \emph{DAEMON\_ARGS} 
+contenga lo siguiente:
+\begin{BVerbatim}
+DAEMON_ARGS="-w 1024"
+\end{BVerbatim}
+. Una vez hecho esto, hay que estar seguro de que el servicio \emph{haveged} se está ejecutando:
+\begin{BVerbatim}
+update-rc.d haveged defaults
+\end{BVerbatim}
 
+Ahora, se puede generar el fichero de contraseñas con hashes MD5 con el siguiente comando:
+\lstset{style=mystyle}
+\lstinputlisting[language=bash]{gen_pass_md5.sh}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.8]{img/gen_pass_md5.png}
+  \caption{Generación de un fichero de contraseñas con hashes MD5}
+  \label{fig:generación de un fichero de contraseñas con hashes MD5}
+\end{figure}
+
+% Nueva página
+\cleardoublepage
+
+\chapter{Creacion de usuarios con contraseñas generadas por \emph{pwgen}}
+Para crear usuarios con contraseñas generadas por \emph{pwgen}, se ha creado un script que genera
+cinco usuarios con contraseñas de menor a mayor fortaleza. El script es el siguiente:
+\lstset{style=mystyle}
+\lstinputlisting[language=Bash]{gen_users_pwgen.sh}
+
+Al ejecutar el script, se crean los usuarios con las contraseñas generadas por \emph{pwgen}:
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.8]{img/users_creation.png}
+  \caption{Creación de usuarios con contraseñas generadas por \emph{pwgen}}
+  \label{fig:creación de usuarios con contraseñas generadas por pwgen}
+\end{figure}
+
+Una vez creado los usuarios, copiamos el fichero \emph{/etc/passwd} a un directorio de trabajo como se muestra en la figura \ref{fig:copia del fichero /etc/passwd}:
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.8]{img/copy_passwd.png}
+  \caption{Copia del fichero \emph{/etc/passwd}}
+  \label{fig:copia del fichero /etc/passwd}
+\end{figure}
+
+\section{Contraseñas de menor a mayor fortaleza}
+\begin{itemize}
+  \item \textbf{\emph{pwgen -0 -A 8 -1}}: Contraseña donde no incluye numeros, solo letras minusculas y de longitud 8.
+  \item \textbf{\emph{pwgen -n -1 10}}: Contraseña que al menos una letra mayuscula, sin numeros y de longitud 12.
+  \item \textbf{\emph{pwgen -y -A 8 -1}}: Contraseña que incluye al menos un simbolo especial con todas las letras minusculas y de longitud 8.
+  \item \textbf{\emph{pwgen -c -n -y 10 -1}}: Contraseña que incluye al menos una mayuscula, al menos algun número y algun simbolo especial con longitud 10.
+  \item \textbf{\emph{pwgen -c -n -s -B -1 16}}: Contraseña que incluye al menos una mayuscula, al menos algun numero, donde no incluye caracteres ambiguos y 
+  generando contraseñas completamente aleatorias de longitud 16.
+\end{itemize}
+
+% Nueva página
+\cleardoublepage
+
+\chapter{Crackear las contraseñas con la herramienta \emph{John the Ripper}}
+
+% Nueva página
+\cleardoublepage
 
 \chapter{Bibliografía} % En formato APA
 \begin{enumerate}

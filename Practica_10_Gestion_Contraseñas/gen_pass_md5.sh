@@ -1,0 +1,1 @@
+echo "mypassword" | makepasswd --clearfrom=- --crypt-md5 | awk '{ print $2 }'
