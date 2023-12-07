@@ -282,10 +282,11 @@ Al ejecutar el script, se crean los usuarios con las contraseñas generadas por 
   \label{fig:creación de usuarios con contraseñas generadas por pwgen}
 \end{figure}
 
-Una vez creado los usuarios, vamos a proceder a hacer un paso básico que es el "desombreado" que es 
-un proceso en el que se combian el fichero \emph{/etc/passwd} y \emph{/etc/shadow} para que el hash de
+Una vez creado los usuarios, vamos a proceder a hacer un paso básico que es el “desombreado" que es 
+un proceso en el que se combinan el fichero \emph{/etc/passwd} y \emph{/etc/shadow} para que el hash de
 la contraseña se encuentre en el fichero \emph{/etc/passwd} y no en el fichero \emph{/etc/shadow}. Para
-ello, se ejecuta el siguiente comando:
+ello, haremos copias de estos archivos y los llamaremos \emph{passwd} y \emph{shadow} respectivamente y lo haremos
+en el directorio donde se vaya a trabajar. Una vez hecho esto, se ejecuta el siguiente comando:
 \lstset{style=mystyle}
 \lstinputlisting[language=Bash]{unshadow.sh}
 
