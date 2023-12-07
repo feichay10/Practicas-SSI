@@ -261,8 +261,8 @@ Ahora, se puede generar el fichero de contraseñas con hashes MD5 con el siguien
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.8]{img/gen_pass_md5.png}
-  \caption{Generación de un fichero de contraseñas con hashes MD5}
-  \label{fig:generación de un fichero de contraseñas con hashes MD5}
+  \caption{Generación de contraseñas con hashes MD5}
+  \label{fig:generación de contraseñas con hashes MD5}
 \end{figure}
 
 % Nueva página
@@ -272,7 +272,7 @@ Ahora, se puede generar el fichero de contraseñas con hashes MD5 con el siguien
 Para crear usuarios con contraseñas generadas por \emph{pwgen}, se ha creado un script que genera
 cinco usuarios con contraseñas de menor a mayor fortaleza. El script es el siguiente:
 \lstset{style=mystyle}
-\lstinputlisting[language=Bash]{gen_users_pwgen.sh}
+\lstinputlisting[language=Bash]{create_users.sh}
 
 Al ejecutar el script, se crean los usuarios con las contraseñas generadas por \emph{pwgen}:
 \begin{figure}[H]
@@ -282,23 +282,20 @@ Al ejecutar el script, se crean los usuarios con las contraseñas generadas por 
   \label{fig:creación de usuarios con contraseñas generadas por pwgen}
 \end{figure}
 
-Una vez creado los usuarios, copiamos el fichero \emph{/etc/passwd} a un directorio de trabajo como se muestra en la figura \ref{fig:copia del fichero /etc/passwd}:
+Una vez creado los usuarios, vamos a proceder a hacer un paso básico que es el "desombreado" que es 
+un proceso en el que se combian el fichero \emph{/etc/passwd} y \emph{/etc/shadow} para que el hash de
+la contraseña se encuentre en el fichero \emph{/etc/passwd} y no en el fichero \emph{/etc/shadow}. Para
+ello, se ejecuta el siguiente comando:
+\lstset{style=mystyle}
+\lstinputlisting[language=Bash]{unshadow.sh}
+
+Ahora el fichero \emph{unshadowed.txt} tendrá el siguiente contenido:
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.8]{img/copy_passwd.png}
-  \caption{Copia del fichero \emph{/etc/passwd}}
-  \label{fig:copia del fichero /etc/passwd}
+  \includegraphics[scale=0.52]{img/unshadowed.png}
+  \caption{Contenido del fichero \emph{unshadowed.txt}}
+  \label{fig:contenido del fichero unshadow.txt}
 \end{figure}
-
-\section{Contraseñas de menor a mayor fortaleza}
-\begin{itemize}
-  \item \textbf{\emph{pwgen -0 -A 8 -1}}: Contraseña donde no incluye numeros, solo letras minusculas y de longitud 8.
-  \item \textbf{\emph{pwgen -n -1 10}}: Contraseña que al menos una letra mayuscula, sin numeros y de longitud 12.
-  \item \textbf{\emph{pwgen -y -A 8 -1}}: Contraseña que incluye al menos un simbolo especial con todas las letras minusculas y de longitud 8.
-  \item \textbf{\emph{pwgen -c -n -y 10 -1}}: Contraseña que incluye al menos una mayuscula, al menos algun número y algun simbolo especial con longitud 10.
-  \item \textbf{\emph{pwgen -c -n -s -B -1 16}}: Contraseña que incluye al menos una mayuscula, al menos algun numero, donde no incluye caracteres ambiguos y 
-  generando contraseñas completamente aleatorias de longitud 16.
-\end{itemize}
 
 % Nueva página
 \cleardoublepage
@@ -312,7 +309,7 @@ Una vez creado los usuarios, copiamos el fichero \emph{/etc/passwd} a un directo
 \chapter{Bibliografía} % En formato APA
 \begin{enumerate}
 \item LaMendola, S. (2013). How to Setup Additional Entropy for Cloud Servers Using Haveged. DigitalOcean. Recuperado de \url{https://www.digitalocean.com/community/tutorials/how-to-setup-additional-entropy-for-cloud-servers-using-haveged}
-
+\item erev0s. (2020). Cracking /etc/shadow with John. Recuperado de \url{https://erev0s.com/blog/cracking-etcshadow-john/}  
 \end{enumerate}
 
 \end{document}
