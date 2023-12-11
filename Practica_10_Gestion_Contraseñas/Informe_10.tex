@@ -269,17 +269,15 @@ Ahora, se puede generar el fichero de contraseñas con hashes MD5 con el siguien
 \cleardoublepage
 
 \chapter{Creacion de usuarios con contraseñas generadas por \emph{pwgen}}
-Para crear usuarios con contraseñas generadas por \emph{pwgen}, se ha creado un script que genera
-cinco usuarios con contraseñas de menor a mayor fortaleza. El script es el siguiente:
+Para crear los usuarios se ha optado por crear un script que cree los usuarios y que asigne las contraseñas
+con hashes MD5. El script es el siguiente:
 \lstset{style=mystyle}
 \lstinputlisting[language=Bash]{create_users.sh}
 
-Al ejecutar el script, se crean los usuarios con las contraseñas generadas por \emph{pwgen}:
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.8]{img/users_creation.png}
-  \caption{Creación de usuarios con contraseñas generadas por \emph{pwgen}}
-  \label{fig:creación de usuarios con contraseñas generadas por pwgen}
+  \includegraphics[scale=0.68]{img/users_creation.png}
+  \caption{Resultado de ejecución del script}
 \end{figure}
 
 Una vez creado los usuarios, vamos a proceder a hacer un paso básico que es el “desombreado" que es 
@@ -302,6 +300,54 @@ Ahora el fichero \emph{unshadowed.txt} tendrá el siguiente contenido:
 \cleardoublepage
 
 \chapter{Crackear las contraseñas con la herramienta \emph{John the Ripper}}
+Para crackear las contraseñas con la herramienta \emph{John the Ripper}, según los modos, se ejecutan los
+siguientes comandos:
+\begin{itemize}
+  \item \textbf{Invocación básica:} \emph{john \texttt{--}format=crypt unshadowed.txt}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{img/john_basic.png}
+    \caption{Invocación básica de \emph{John the Ripper}}
+    \label{fig:invocación básica de john the ripper}
+  \end{figure}
+
+  % \item \textbf{Invocación con diccionario:} \emph{john \texttt{--}wordlist=/usr/share/john/password.lst unshadowed.txt}
+  \item \textbf{Invocación con diccionario:} \emph{john \texttt{--}format=crypt \texttt{-}w:crackstation-human-only.txt unshadowed.txt}
+  Para este caso, se ha usado el diccionario \emph{crackstation-human-only.txt} que se puede encontrar en \url{https://crackstation.net/crackstation-wordlist-password-cracking-dictionary.htm}
+  y es una lista que contiene todas las listas de palabras, diccionarios y bases de datos de contraseñas que la persona que lo hizo ha recopilado de Internet. También contiene todas las palabras
+  de las bases de datos de Wikipedia (páginas-artículos, recuperados en 2010, todos los idiomas), así como montones de libros del Proyecto Gutenberg. También incluye las contraseñas de algunas 
+  violaciones de bases de datos de perfil bajo que se vendían en la deep-weeb hace años.
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{img/john_dictionary.png}
+    \caption{Invocación con diccionario de \emph{John the Ripper}}
+    \label{fig:invocación con diccionario de john the ripper}
+  \end{figure}
+
+  % Nueva página
+  \cleardoublepage
+
+  \item \textbf{Invocación con wordlist:} \emph{john \texttt{--}format=crypt \texttt{--}wordlist=crackstation-human-only.txt unshadowed.txt}
+  En esta invocación, se ha usado el mismo diccionario que en la invocación anterior.
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.47]{img/john_wordlist.png}
+    \caption{Invocación con wordlist de \emph{John the Ripper}}
+    \label{fig:invocación con wordlist de john the ripper}
+  \end{figure}
+
+  \item \textbf{Invocación single:} \emph{john \texttt{--}format=crypt \texttt{--}single unshadowed.txt}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{img/john_single.png}
+    \caption{Invocación single de \emph{John the Ripper}}
+    \label{fig:invocación single de john the ripper}
+  \end{figure}
+
+  \item \textbf{Invocación incremental:} \emph{john \texttt{--}format=crypt \texttt{--}incremental unshadowed.txt}
+  
+
+\end{itemize}
 
 
 % Nueva página
@@ -311,6 +357,7 @@ Ahora el fichero \emph{unshadowed.txt} tendrá el siguiente contenido:
 \begin{enumerate}
 \item LaMendola, S. (2013). How to Setup Additional Entropy for Cloud Servers Using Haveged. DigitalOcean. Recuperado de \url{https://www.digitalocean.com/community/tutorials/how-to-setup-additional-entropy-for-cloud-servers-using-haveged}
 \item erev0s. (2020). Cracking /etc/shadow with John. Recuperado de \url{https://erev0s.com/blog/cracking-etcshadow-john/}  
+\item DefuseSec. (2019). CrackStation's Password Cracking Dictionary. Recuperado de \url{https://crackstation.net/crackstation-wordlist-password-cracking-dictionary.htm}
 \end{enumerate}
 
 \end{document}

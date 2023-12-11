@@ -12,7 +12,7 @@ for user in "${USERS[@]}"; do
     echo "$user:$password1" | sudo chpasswd
     PASSWORDS+=("$password1")
   elif [ $user == "usuario2" ]; then
-    password2="usuario1"
+    password2="usuario2"
     password2_md5=$(echo $password2 | makepasswd --clearfrom=- --crypt-md5 | awk '{ print $2 }')
     echo "$user:$password2" | sudo chpasswd
     PASSWORDS+=("$password2")
