@@ -20,6 +20,7 @@
 \usepackage{listings}
 \usepackage{subcaption}
 \usepackage{xcolor}
+\usepackage{amssymb}
 
 \newcommand{\subtitle}[1]{
   \posttitle{
@@ -98,7 +99,7 @@
 % \noindent
 
 % % Punto
-% \CIRCLE \ \ \textbf{Texto} \emph{algo}
+% $\checkmark$ \ \ \textbf{Texto} \emph{algo}
 % \begin{itemize}
 %   \item \textbf{Negrita:} Texto
 %   \item \textbf{Negrita:} Texto
@@ -182,9 +183,9 @@
 % Secciones del informe
 % Capitulo 1
 \chapter{Instalación de las máquinas virtuales}
-Para esta práctica se va a instalar dos máquinas virtuales, una \emph{Ubuntu Server 16.04} 
+Para esta práctica se va a instalar dos máquinas virtuales, una \emph{Ubuntu Server 16.04}
 y una \emph{CentOS 7} para estudiar las configuraciones de hardening del sistema operativo
-basados en un control de acceso MAC implementadas en estos sistemas con \emph{AppArmor} 
+basados en un control de acceso MAC implementadas en estos sistemas con \emph{AppArmor}
 y \emph{SELinux} respectivamente.
 
 \begin{figure}[H]
@@ -208,12 +209,12 @@ $ sudo apt-get install -y php php-mysqli php-gd
 
 Una vez instalado los paquetes, vamos a inicializar el servicio de Apache con el siguiente comando:
 \begin{BVerbatim}
-sudo service apache2 start
+  sudo service apache2 start
 \end{BVerbatim}
 
 y a ejecutar el script de configuración de MariaDB con el siguiente comando:
 \begin{BVerbatim}
-sudo mysql_secure_installation
+  sudo mysql_secure_installation
 \end{BVerbatim}
 
 Y ahora vamos a instalar DVWA descargandolo desde el repositorio oficial de DVWA en GitHub. Para ello, primero instalamos git y clonamos el repositorio de DVWA en el directorio
@@ -234,12 +235,12 @@ $ sudo yum install -y httpd mariadb-server mariadb php php-mysql php-gd
 
 Una vez instalado los paquetes, vamos a inicializar el servicio de Apache con el siguiente comando:
 \begin{BVerbatim}
-sudo systemctl start httpd.service
+  sudo systemctl start httpd.service
 \end{BVerbatim}
 
 y a ejecutar el script de configuración de MariaDB con el siguiente comando:
 \begin{BVerbatim}
-sudo mysql_secure_installation
+  sudo mysql_secure_installation
 \end{BVerbatim}
 
 Y ahora vamos a instalar DVWA descargandolo desde el repositorio oficial de DVWA en GitHub. Para ello, primero instalamos git y clonamos el repositorio de DVWA en el directorio
@@ -263,7 +264,7 @@ $_DVWA[ 'db_server' ]   = getenv('DB_SERVER') ?: '127.0.0.1';
 $_DVWA[ 'db_database' ] = 'dvwa';
 $_DVWA[ 'db_user' ]     = 'dvwa';
 $_DVWA[ 'db_password' ] = 'ssi12345';
-$_DVWA[ 'db_port' ]      = '3306';
+$_DVWA[ 'db_port' ]     = '3306';
 \end{verbatim}
 
 Y ahora vamos a crear la base de datos \emph{dvwa} y el usuario \emph{dvwa} con el siguiente comando:
@@ -282,12 +283,134 @@ mysql> flush privileges;
 Query OK, 0 rows affected (0.00 sec)
 \end{verbatim}
 
+\chapter{Realización de vulnerabilidades}
+\section{Vulnerabilidades en Ubuntu Server 16.04}
+\subsection{Máquina por defecto}
+\begin{itemize}
+  \item \textbf{Creación de una carpeta temporal en el directorio \emph{/var/tmp}}:
+        \begin{figure}[H]
+          \centering
+          \includegraphics[scale=0.35]{img/UbuntuServer/UbuntuServer_Base_1.png}
+          \caption{Creación de un fichero temporal en el directorio \emph{/var/tmp}}
+        \end{figure}
+  \item \textbf{Creación de un archivo en la raíz web}: 10.6.129.208; echo "Hola, este es mi archivo" \textbar \space sudo tee /var/www/html/miarchivo.html
+        \begin{figure}[H]
+          \centering
+          \includegraphics[scale=0.35]{img/UbuntuServer/UbuntuServer_Base_2.png}
+          \caption{Creación de un archivo en la raíz web}
+        \end{figure}
+  \item \textbf{Inyección de comandos (con éxito)}:
+        \begin{figure}[H]
+          \centering
+          \includegraphics[scale=0.5]{img/UbuntuServer/UbuntuServer_Base_3.png}
+          \caption{Inyección del comando \emph{ls} con éxito}
+        \end{figure}
+  \item \textbf{cat \emph{/etc/passwd}}:
+        \begin{figure}[H]
+          \centering
+          \includegraphics[scale=0.43]{img/UbuntuServer/UbuntuServer_Base_4.png}
+          \caption{Visualización del contenido del archivo \emph{/etc/passwd}}
+        \end{figure}
+  \item \textbf{Creación de un crontab}:
+        % \begin{figure}
+        %   \centering
+        %   \includegraphics[scale=0.43]{img/UbuntuServer/UbuntuServer_Base_5.png}
+        %   \caption{Creación de un crontab}
+        % \end{figure}
+  \item \textbf{Obtener un fichero por \emph{wget}}:
+        \begin{figure}[H]
+          \centering
+          \includegraphics[scale=0.4]{img/UbuntuServer/UbuntuServer_Base_6.png}
+          \caption{Obtención de un fichero por \emph{wget}}
+        \end{figure}
+  \item \textbf{Reverse Shell}:
+\end{itemize}
 
+\subsection{Máquina con \emph{AppArmor} activado}
+\subsection{Máquina con \emph{SELinux} activado}
+
+\section{Vulnerabilidades en CentOS 7}
+\subsection{Máquina por defecto}
+\begin{itemize}
+  \item \textbf{Creación de una carpeta temporal en el directorio \emph{/var/tmp}}:
+        \begin{figure}[H]
+          \centering
+          \includegraphics[scale=0.35]{img/CentOS/Centos7_Base_1.png}
+          \caption{Creación de un fichero temporal en el directorio \emph{/var/tmp}}
+        \end{figure}
+  \item \textbf{Creación de un archivo en la raíz web}: 10.6.129.208; echo "Hola, este es mi archivo" \textbar \space sudo tee /var/www/html/miarchivo.html
+        \begin{figure}[H]
+          \centering
+          \includegraphics[scale=0.35]{img/CentOS/Centos7_Base_2.png}
+          \caption{Creación de un archivo en la raíz web}
+        \end{figure}
+  \item \textbf{Inyección de comandos (con éxito)}:
+        \begin{figure}[H]
+          \centering
+          \includegraphics[scale=0.5]{img/CentOS/Centos7_Base_3.png}
+          \caption{Inyección del comando \emph{ls} con éxito}
+        \end{figure}
+  \item \textbf{cat \emph{/etc/passwd}}:
+        \begin{figure}[H]
+          \centering
+          \includegraphics[scale=0.43]{img/CentOS/Centos7_Base_4.png}
+          \caption{Visualización del contenido del archivo \emph{/etc/passwd}}
+        \end{figure}
+  \item \textbf{Creación de un crontab}:
+        % \begin{figure}
+        %   \centering
+        %   \includegraphics[scale=0.43]{img/UbuntuServer/UbuntuServer_Base_5.png}
+        %   \caption{Creación de un crontab}
+        % \end{figure}
+  \item \textbf{Obtener un fichero por \emph{wget}}:
+        \begin{figure}[H]
+          \centering
+          \includegraphics[scale=0.4]{img/CentOS/Centos7_Base_6.png}
+          \caption{Obtención de un fichero por \emph{wget}}
+        \end{figure}
+  \item \textbf{Reverse Shell}:
+\end{itemize}
+\subsection{Máquina con \emph{AppArmor} activado}
+\subsection{Máquina con \emph{SELinux} activado}
+
+\chapter{Resultados de los análisis de vulnerabilidades}
+%Tabla de vulnerabilidades
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Vulnerabilidad}                      & \textbf{Ubuntu Server 16.04} & \textbf{CentOS 7} \\ \hline
+    Creación carpeta temporal en \emph{/var/tmp} & $\checkmark$                 & $\checkmark$      \\ \hline
+    Creación de un archivo en la raíz web        & $\checkmark$                 & $\checkmark$      \\ \hline
+    Inyección de comandos (con éxito)            & $\checkmark$                 & $\checkmark$      \\ \hline
+    cat \emph{/etc/passwd}                       & $\checkmark$                 & $\checkmark$      \\ \hline
+    Creación de un crontab                       & $\checkmark$                 & $\checkmark$      \\ \hline
+    Obtener un fichero por \emph{wget}           & $\checkmark$                 & $\checkmark$      \\ \hline
+    Reverse Shell                                & $\checkmark$                 & $\checkmark$      \\ \hline
+  \end{tabular}
+  \caption{Tabla de vulnerabilidades 1}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Vulnerabilidad}                      & \textbf{Ubuntu App Armor} & \textbf{Ubuntu SELinux} \\ \hline
+    Creación carpeta temporal en \emph{/var/tmp} & $\checkmark$              & $\checkmark$            \\ \hline
+    Creación de un archivo en la raíz web        & $\checkmark$              & $\checkmark$            \\ \hline
+    Inyección de comandos (con éxito)            & $\checkmark$              & $\checkmark$            \\ \hline
+    cat \emph{/etc/passwd}                       & $\checkmark$              & $\checkmark$            \\ \hline
+    Creación de un crontab                       & $\checkmark$              & $\checkmark$            \\ \hline
+    Obtener un fichero por \emph{wget}           & $\checkmark$              & $\checkmark$            \\ \hline
+    Reverse Shell                                & $\checkmark$              & $\checkmark$            \\ \hline
+  \end{tabular}
+  \caption{Tabla de vulnerabilidades 2}
+\end{table}
 
 \chapter{Bibliografía} % En formato APA
 \begin{enumerate}
-\item Ng Pante, C. (2001). Titulo. Nombre pagina web. Recuperado de \url{http://url.com}
-
+  \item digininja. (2023). DVWA. GitHub. Recuperado de \url{https://github.com/digininja/DVWA}
+  \item ComputerSecurityStudent. (2014). DVWA v1.0.7. Recuperado de \url{https://www.computersecuritystudent.com/cgi-bin/CSS/process_request_v3.pl?HID=688b0913be93a4d95daed400990c4745&TYPE=SUB}
 \end{enumerate}
 
 \end{document}
