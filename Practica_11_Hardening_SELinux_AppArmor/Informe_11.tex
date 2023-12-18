@@ -284,16 +284,20 @@ Query OK, 0 rows affected (0.00 sec)
 \end{verbatim}
 
 \chapter{Realización de vulnerabilidades}
-\section{Vulnerabilidades en Ubuntu Server 16.04}
-\subsection{Máquina por defecto}
 \begin{itemize}
   \item \textbf{Creación de una carpeta temporal en el directorio \emph{/var/tmp}}:
+        \begin{verbatim}
+10.6.129.208; mkdir /var/tmp/prueba
+        \end{verbatim}
         \begin{figure}[H]
           \centering
           \includegraphics[scale=0.35]{img/UbuntuServer/UbuntuServer_Base_1.png}
           \caption{Creación de un fichero temporal en el directorio \emph{/var/tmp}}
         \end{figure}
-  \item \textbf{Creación de un archivo en la raíz web}: 10.6.129.208; echo "Hola, este es mi archivo" \textbar \space sudo tee /var/www/html/miarchivo.html
+  \item \textbf{Creación de un archivo en la raíz web}:
+        \begin{verbatim}
+10.6.129.208; echo "Hola, este es mi archivo" | sudo tee /var/www/html/miarchivo.html
+        \end{verbatim}
         \begin{figure}[H]
           \centering
           \includegraphics[scale=0.35]{img/UbuntuServer/UbuntuServer_Base_2.png}
@@ -311,67 +315,38 @@ Query OK, 0 rows affected (0.00 sec)
           \includegraphics[scale=0.43]{img/UbuntuServer/UbuntuServer_Base_4.png}
           \caption{Visualización del contenido del archivo \emph{/etc/passwd}}
         \end{figure}
-  \item \textbf{Creación de un crontab}:
-        % \begin{figure}
-        %   \centering
-        %   \includegraphics[scale=0.43]{img/UbuntuServer/UbuntuServer_Base_5.png}
-        %   \caption{Creación de un crontab}
-        % \end{figure}
   \item \textbf{Obtener un fichero por \emph{wget}}:
         \begin{figure}[H]
           \centering
-          \includegraphics[scale=0.4]{img/UbuntuServer/UbuntuServer_Base_6.png}
+          \includegraphics[scale=0.28]{img/UbuntuServer/UbuntuServer_Base_6.png}
           \caption{Obtención de un fichero por \emph{wget}}
         \end{figure}
-  \item \textbf{Reverse Shell}:
-\end{itemize}
+  \item \textbf{Reverse Shell}: Para realizar el reverse shell, se ha descargado desde \url{https://github.com/phpwebshell/c99shell}
+        el archivo \emph{c99.php} y se ha subido al servidor web. Al inyectar c99shell en el servidor web, al intentar acceder a este
+        lo que hará Apache es ejecutar el código PHP y devolverá el resultado de la ejecución del código PHP.
+        \begin{figure}[H]
+          \centering
+          \includegraphics[scale=0.28]{img/UbuntuServer/UbuntuServer_Base_7_c99shell.png}
+          \caption{Inyección de c99shell en el servidor web}
+        \end{figure}
 
-\subsection{Máquina con \emph{AppArmor} activado}
-\subsection{Máquina con \emph{SELinux} activado}
+        Como se ha subido descomprimido, se puede inyectar el código PHP descomprimiendo el archivo \emph{c99shell.php.gz} por lo que
+        en el “Command Injection” vamos a ejecutar el siguiente comando:
+        \begin{verbatim}
+10.6.129.208; /bin/gunzip -v ../../hackable/uploads/c99.php
+        \end{verbatim}
+        \begin{figure}[H]
+          \centering
+          \includegraphics[scale=0.36]{img/UbuntuServer/UbuntuServer_Base_7_c99shell_2.png}
+          \caption{Descompresión de c99shell en el servidor web}
+        \end{figure}
 
-\section{Vulnerabilidades en CentOS 7}
-\subsection{Máquina por defecto}
-\begin{itemize}
-  \item \textbf{Creación de una carpeta temporal en el directorio \emph{/var/tmp}}:
         \begin{figure}[H]
           \centering
-          \includegraphics[scale=0.35]{img/CentOS/Centos7_Base_1.png}
-          \caption{Creación de un fichero temporal en el directorio \emph{/var/tmp}}
+          \includegraphics[scale=0.36]{img/UbuntuServer/UbuntuServer_Base_7_c99shell_ejecution.png}
+          \caption{Ejecución de c99shell en el servidor web}
         \end{figure}
-  \item \textbf{Creación de un archivo en la raíz web}: 10.6.129.208; echo "Hola, este es mi archivo" \textbar \space sudo tee /var/www/html/miarchivo.html
-        \begin{figure}[H]
-          \centering
-          \includegraphics[scale=0.35]{img/CentOS/Centos7_Base_2.png}
-          \caption{Creación de un archivo en la raíz web}
-        \end{figure}
-  \item \textbf{Inyección de comandos (con éxito)}:
-        \begin{figure}[H]
-          \centering
-          \includegraphics[scale=0.5]{img/CentOS/Centos7_Base_3.png}
-          \caption{Inyección del comando \emph{ls} con éxito}
-        \end{figure}
-  \item \textbf{cat \emph{/etc/passwd}}:
-        \begin{figure}[H]
-          \centering
-          \includegraphics[scale=0.43]{img/CentOS/Centos7_Base_4.png}
-          \caption{Visualización del contenido del archivo \emph{/etc/passwd}}
-        \end{figure}
-  \item \textbf{Creación de un crontab}:
-        % \begin{figure}
-        %   \centering
-        %   \includegraphics[scale=0.43]{img/UbuntuServer/UbuntuServer_Base_5.png}
-        %   \caption{Creación de un crontab}
-        % \end{figure}
-  \item \textbf{Obtener un fichero por \emph{wget}}:
-        \begin{figure}[H]
-          \centering
-          \includegraphics[scale=0.4]{img/CentOS/Centos7_Base_6.png}
-          \caption{Obtención de un fichero por \emph{wget}}
-        \end{figure}
-  \item \textbf{Reverse Shell}:
 \end{itemize}
-\subsection{Máquina con \emph{AppArmor} activado}
-\subsection{Máquina con \emph{SELinux} activado}
 
 \chapter{Resultados de los análisis de vulnerabilidades}
 %Tabla de vulnerabilidades
@@ -381,36 +356,35 @@ Query OK, 0 rows affected (0.00 sec)
     \hline
     \textbf{Vulnerabilidad}                      & \textbf{Ubuntu Server 16.04} & \textbf{CentOS 7} \\ \hline
     Creación carpeta temporal en \emph{/var/tmp} & $\checkmark$                 & $\checkmark$      \\ \hline
-    Creación de un archivo en la raíz web        & $\checkmark$                 & $\checkmark$      \\ \hline
+    Creación de un archivo en la raíz web        & $\times$                     & $\times$          \\ \hline
     Inyección de comandos (con éxito)            & $\checkmark$                 & $\checkmark$      \\ \hline
     cat \emph{/etc/passwd}                       & $\checkmark$                 & $\checkmark$      \\ \hline
-    Creación de un crontab                       & $\checkmark$                 & $\checkmark$      \\ \hline
     Obtener un fichero por \emph{wget}           & $\checkmark$                 & $\checkmark$      \\ \hline
     Reverse Shell                                & $\checkmark$                 & $\checkmark$      \\ \hline
   \end{tabular}
-  \caption{Tabla de vulnerabilidades 1}
+  \caption{Tabla de vulnerabilidades con la configuración por defecto}
 \end{table}
 
 \begin{table}[H]
   \centering
-  \begin{tabular}{|c|c|c|c|}
+  \begin{tabular}{|c|c|c|c|c|}
     \hline
-    \textbf{Vulnerabilidad}                      & \textbf{Ubuntu App Armor} & \textbf{Ubuntu SELinux} \\ \hline
-    Creación carpeta temporal en \emph{/var/tmp} & $\checkmark$              & $\checkmark$            \\ \hline
-    Creación de un archivo en la raíz web        & $\checkmark$              & $\checkmark$            \\ \hline
-    Inyección de comandos (con éxito)            & $\checkmark$              & $\checkmark$            \\ \hline
-    cat \emph{/etc/passwd}                       & $\checkmark$              & $\checkmark$            \\ \hline
-    Creación de un crontab                       & $\checkmark$              & $\checkmark$            \\ \hline
-    Obtener un fichero por \emph{wget}           & $\checkmark$              & $\checkmark$            \\ \hline
-    Reverse Shell                                & $\checkmark$              & $\checkmark$            \\ \hline
+    \textbf{Vulnerabilidad}             & \textbf{Ubuntu App Armor} & \textbf{Ubuntu SELinux} & \textbf{CentOS 7 SELinux} \\ \hline
+    Creación carpeta en \emph{/var/tmp} & $\checkmark$              & $\checkmark$            & $\times$                  \\ \hline
+    Creación archivo en la raíz web     & $\times$                  & $\times$                & $\times$                  \\ \hline
+    Inyección de comandos (con éxito)   & $\checkmark$              & $\checkmark$            & $\checkmark$              \\ \hline
+    cat \emph{/etc/passwd}              & $\checkmark$              & $\checkmark$            & $\checkmark$              \\ \hline
+    Obtener un fichero por \emph{wget}  & $\checkmark$              & $\checkmark$            & $\checkmark$              \\ \hline
+    Reverse Shell                       & $\checkmark$              & $\checkmark$            & $\checkmark$              \\ \hline
   \end{tabular}
-  \caption{Tabla de vulnerabilidades 2}
+  \caption{Tabla de vulnerabilidades con la configuración de AppArmor y SELinux}
 \end{table}
 
 \chapter{Bibliografía} % En formato APA
 \begin{enumerate}
   \item digininja. (2023). DVWA. GitHub. Recuperado de \url{https://github.com/digininja/DVWA}
   \item ComputerSecurityStudent. (2014). DVWA v1.0.7. Recuperado de \url{https://www.computersecuritystudent.com/cgi-bin/CSS/process_request_v3.pl?HID=688b0913be93a4d95daed400990c4745&TYPE=SUB}
+  \item phpwebshell. (2021). c99shell. GitHub. Recuperado de \url{https://github.com/phpwebshell/c99shell}
 \end{enumerate}
 
 \end{document}
