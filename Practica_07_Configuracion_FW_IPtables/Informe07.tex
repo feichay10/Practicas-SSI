@@ -135,51 +135,51 @@ usuario@debian# sudo apt install links
 
 \chapter{Configurar el Firewall}
 \begin{itemize}
-  \item Tenga política por defecto ACCEPT para la cadena OUTPUT y DROP para INPUT y FORWARD:
+\item Tenga política por defecto ACCEPT para la cadena OUTPUT y DROP para INPUT y FORWARD:
 
-  \begin{verbatim}
-    iptables -P INPUT DROP
-    iptables -P FORWARD DROP
-    iptables -P OUTPUT ACCEPT
-  \end{verbatim}
+\begin{verbatim}
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+\end{verbatim}
   
-  \item Permita conectividad total desde la interfaz de loopback (lo) para hacer pruebas desde la consola del firewall:
-  
-  \begin{verbatim}
-    iptables -A INPUT -i lo -j ACCEPT
-  \end{verbatim}
-  
-  \item Acepte conexiones desde la red interna a los puertos 80 (web) y 22 (servicio SSH en el FW)
-  
-  \begin{verbatim}
-    iptables -A INPUT -p tcp --dport ssh -j ACCEPT
-    iptables -A INPUT -p tcp --sport 80 -j ACCEPT
-  \end{verbatim}
-  
-  \item Crear una cadena "custom" denominada "SERVICES" para la gestión de los servicios anteriores:
-  
-  \begin{verbatim}
-    # Crear la cadena "SERVICES"
-    iptables -N SERVICES
-  
-    # Añadir reglas a la cadena "SERVICES"
-    iptables -A FORWARD -i ens4 -s 192.168.10.0/24 -j SERVICES
-  
-    # Crear una cadena "SERVICES" y agregar reglas a ella
-    # Permitir trafico a los puertos 80 y 22
-    iptables -A SERVICES -p tcp --dport 22 -j ACCEPT
-    iptables -A SERVICES -p tcp --dport 80 -j ACCEPT
-    iptables -A SERVICES -p tcp --dport 443 -j ACCEPT
-  \end{verbatim}
-  
-  \item Permita el tráfico a una impresora a todo el rango IP de la clase C especificada en la red interna:
-  
-  \begin{verbatim}
-    iptables -A FORWARD -i ens4 -o ens4 -s 192.168.10.2 -d
-    192.168.10.0/24 -j ACCEPT
-    iptables -A FORWARD -i ens4 -o ens4 -s 192.168.10.0/24 -d
-    192.168.10.2 -j ACCEPT
-  \end{verbatim}
+\item Permita conectividad total desde la interfaz de loopback (lo) para hacer pruebas desde la consola del firewall:
+
+\begin{verbatim}
+iptables -A INPUT -i lo -j ACCEPT
+\end{verbatim}
+
+\item Acepte conexiones desde la red interna a los puertos 80 (web) y 22 (servicio SSH en el FW)
+
+\begin{verbatim}
+iptables -A INPUT -p tcp --dport ssh -j ACCEPT
+iptables -A INPUT -p tcp --sport 80 -j ACCEPT
+\end{verbatim}
+
+\item Crear una cadena "custom" denominada "SERVICES" para la gestión de los servicios anteriores:
+
+\begin{verbatim}
+# Crear la cadena "SERVICES"
+iptables -N SERVICES
+
+# Añadir reglas a la cadena "SERVICES"
+iptables -A FORWARD -i ens4 -s 192.168.10.0/24 -j SERVICES
+
+# Crear una cadena "SERVICES" y agregar reglas a ella
+# Permitir trafico a los puertos 80 y 22
+iptables -A SERVICES -p tcp --dport 22 -j ACCEPT
+iptables -A SERVICES -p tcp --dport 80 -j ACCEPT
+iptables -A SERVICES -p tcp --dport 443 -j ACCEPT
+\end{verbatim}
+
+\item Permita el tráfico a una impresora a todo el rango IP de la clase C especificada en la red interna:
+
+\begin{verbatim}
+iptables -A FORWARD -i ens4 -o ens4 -s 192.168.10.2 -d
+192.168.10.0/24 -j ACCEPT
+iptables -A FORWARD -i ens4 -o ens4 -s 192.168.10.0/24 -d
+192.168.10.2 -j ACCEPT
+\end{verbatim}
 \end{itemize}
 
 \begin{figure}[H]
